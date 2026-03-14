@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "/Users/lilit.khalafyan/Desktop/armenian-plagiarism-detector/venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.linting.enabled": false,
+    "python.analysis.typeCheckingMode": "off"
+}

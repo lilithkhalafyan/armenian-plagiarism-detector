@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armenian Plagiarism Detection System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Armenian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #1e1e2f;
+            --light: #f8f9fa;
+            
+            /* Armenian flag colors */
+            --armenian-red: #D90012;
+            --armenian-blue: #0033A0;
+            --armenian-orange: #F2A800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Armenian', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto; /* Changed from hidden to auto */
+        }
+
+        /* Language Switcher - Fixed Position */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 40px;
+            background: transparent;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn i {
+            font-size: 1.2rem;
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .lang-btn.en.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        .lang-btn.hy.active {
+            background: white;
+            color: var(--armenian-red);
+        }
+
+        .lang-btn.hy.active i {
+            color: var(--armenian-blue);
+        }
+
+        /* Animated Background */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            bottom: -150px;
+            right: -100px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.3; }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            z-index: 1;
+            position: relative;
+            margin: 80px auto; /* Added margin to account for fixed header */
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: visible; /* Changed from hidden to visible */
+            border: none;
+            animation: slideUp 0.6s ease;
+            display: flex;
+                
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+       .row {
+    min-height: 650px;
+    align-items: stretch;
+    flex: 1;
+
+}
+
+
+        /* Left Panel - Info */
+        .info-panel {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 3rem;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px 0 0 30px;
+        }
+
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><text x="10" y="50" font-size="80" font-family="Arial">ԱԲ</text></svg>') repeat;
+            pointer-events: none;
+        }
+
+        .info-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .info-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            animation: slideIn 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .feature-item:nth-child(2) { animation-delay: 0.2s; }
+        .feature-item:nth-child(3) { animation-delay: 0.3s; }
+        .feature-item:nth-child(4) { animation-delay: 0.4s; }
+        .feature-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feature-item i {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Right Panel - Forms - FIXED SCROLLING */
+        .form-panel {
+    padding: 3rem;
+    background: white;
+    height: 100%;
+    overflow-y: auto;
+    border-radius: 0 30px 30px 0;
+}
+
+        /* Custom scrollbar for form panel */
+        .form-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-panel::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .form-panel::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .logo h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .logo p {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .form-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 15px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .toggle-btn i {
+            font-size: 1.1rem;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .form-container {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 1;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1rem 1rem 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(63, 55, 201, 0.1));
+        }
+
+        .role-option i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .role-option span {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(247, 37, 133, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 5px;
+            border-radius: 5px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .strength-bar.weak {
+            background: var(--danger);
+            width: 33%;
+        }
+
+        .strength-bar.medium {
+            background: var(--warning);
+            width: 66%;
+        }
+
+        .strength-bar.strong {
+            background: #28a745;
+            width: 100%;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .test-credentials {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .test-credentials h6 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px dashed #dee2e6;
+            font-size: 0.9rem;
+        }
+
+        .credential-item:last-child {
+            border-bottom: none;
+        }
+
+        .credential-role {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .fill-btn {
+            background: none;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fill-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 992px) {
+            .info-panel {
+                border-radius: 30px 30px 0 0;
+            }
+            
+            .form-panel {
+                border-radius: 0 0 30px 30px;
+                max-height: 60vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+                padding: 5px;
+            }
+            
+            .lang-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                margin: 100px auto 20px;
+            }
+            
+            .form-panel {
+                padding: 2rem;
+                max-height: 70vh;
+            }
+            
+            .role-selector {
+                flex-direction: column;
+            }
+        }
+
+        /* Fix for small screens */
+        @media (max-height: 700px) {
+            .form-panel {
+                max-height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher - Fixed Position -->
+    <div class="language-switcher">
+        <button class="lang-btn en active" onclick="setLanguage('en')" id="langEn">
+            <i class="fas fa-language"></i>
+            <span>English</span>
+        </button>
+        <button class="lang-btn hy" onclick="setLanguage('hy')" id="langHy">
+            <i class="fas fa-language"></i>
+            <span>Հայերեն</span>
+        </button>
+    </div>
+
+    <!-- Animated Background -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="container">
+        <div class="card">
+            <div class="row g-0">
+                <!-- Left Panel - Info -->
+                <div class="col-lg-6">
+                    <div class="info-panel">
+                        <div class="info-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h1 class="info-title" id="infoTitle">Armenian Plagiarism Detection</h1>
+                        <p class="info-subtitle" id="infoSubtitle">Advanced AI-powered system for academic integrity</p>
+                        
+                        <ul class="feature-list" id="featureList">
+                            <li class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span id="feature1">Multi-format support (PDF, DOCX, TXT, RTF)</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span id="feature2">Armenian language optimized with synonyms</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span id="feature3">AI content detection with sentence analysis</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span id="feature4">Real-time plagiarism highlighting</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span id="feature5">Role-based dashboards for lecturers & students</span>
+                            </li>
+                        </ul>
+                        
+                        <div style="margin-top: auto;">
+                            <p class="mb-2" id="thesis"><i class="fas fa-graduation-cap"></i> Bachelor's Thesis</p>
+                            <p class="mb-0" id="author"><small>Lilit Khalafyan - Information Security</small></p>
+                            <p id="university"><small>National Polytechnic University</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Panel - Forms - NOW SCROLLABLE -->
+                <div class="col-lg-6">
+                    <div class="form-panel">
+                        <div class="logo">
+                            <i class="fas fa-shield-alt"></i>
+                            <h2 id="welcomeTitle">Welcome Back</h2>
+                            <p id="welcomeSubtitle">Sign in to continue to your dashboard</p>
+                        </div>
+                        
+                        <!-- Form Toggle -->
+                        <div class="form-toggle">
+                            <button class="toggle-btn active" id="loginToggle" onclick="switchForm('login')">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span id="loginTab">Login</span>
+                            </button>
+                            <button class="toggle-btn" id="registerToggle" onclick="switchForm('register')">
+                                <i class="fas fa-user-plus"></i>
+                                <span id="registerTab">Register</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Login Form -->
+                        <div class="form-container" id="loginForm">
+                            <div class="form-group">
+                                <label for="loginUsername" id="loginUsernameLabel">Username</label>
+                                <div class="input-group">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="loginPassword" id="loginPasswordLabel">Password</label>
+                                <div class="input-group">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password">
+                                </div>
+                            </div>
+                            
+                            <div class="error-message" id="loginError"></div>
+                            
+                            <button class="btn-submit" onclick="login()" id="loginBtn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Sign In</span>
+                            </button>
+                            
+                            <!-- Test Credentials -->
+                            <div class="test-credentials">
+                                <h6 id="testCredentials"><i class="fas fa-flask"></i> Test Credentials</h6>
+                                <div class="credential-item">
+                                    <span class="credential-role" id="lecturerCred">Lecturer:</span>
+                                    <span>lecturer / lecturer123</span>
+                                    <button class="fill-btn" onclick="fillCredentials('lecturer')">
+                                        <i class="fas fa-paste"></i> <span id="fillBtn">Fill</span>
+                                    </button>
+                                </div>
+                                <div class="credential-item">
+                                    <span class="credential-role" id="studentCred">Student:</span>
+                                    <span>student / student123</span>
+                                    <button class="fill-btn" onclick="fillCredentials('student')">
+                                        <i class="fas fa-paste"></i> <span id="fillBtn">Fill</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Register Form - NOW FULLY VISIBLE WITH SCROLL -->
+                        <div class="form-container" id="registerForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="regUsername" id="regUsernameLabel">Username</label>
+                                <div class="input-group">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" class="form-control" id="regUsername" placeholder="Choose a username">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="regFullName" id="regFullNameLabel">Full Name</label>
+                                <div class="input-group">
+                                    <i class="fas fa-id-card"></i>
+                                    <input type="text" class="form-control" id="regFullName" placeholder="Enter your full name">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="regEmail" id="regEmailLabel">Email</label>
+                                <div class="input-group">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="email" class="form-control" id="regEmail" placeholder="Enter your email">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="regPassword" id="regPasswordLabel">Password</label>
+                                <div class="input-group">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" class="form-control" id="regPassword" placeholder="Create a password" onkeyup="checkPasswordStrength()">
+                                </div>
+                                <!-- Password strength indicator -->
+                                <div class="password-strength">
+                                    <div class="strength-bar" id="strengthBar"></div>
+                                </div>
+                                <div class="strength-text" id="strengthText"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="regConfirmPassword" id="regConfirmLabel">Confirm Password</label>
+                                <div class="input-group">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" class="form-control" id="regConfirmPassword" placeholder="Confirm your password">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label id="roleLabel">Select Role</label>
+                                <div class="role-selector">
+                                    <div class="role-option selected" onclick="selectRole('lecturer')" id="roleLecturer">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                        <span id="lecturerRole">Lecturer</span>
+                                    </div>
+                                    <div class="role-option" onclick="selectRole('student')" id="roleStudent">
+                                        <i class="fas fa-user-graduate"></i>
+                                        <span id="studentRole">Student</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="error-message" id="registerError"></div>
+                            <div class="success-message" id="registerSuccess"></div>
+                            
+                            <button class="btn-submit" onclick="register()" id="registerBtn">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Create Account</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000/api';
+        let selectedRole = 'lecturer';
+        let currentLanguage = 'en';
+
+        // Translations
+        const translations = {
+            en: {
+                langEn: 'English',
+                langHy: 'Հայերեն',
+                infoTitle: 'Armenian Plagiarism Detection',
+                infoSubtitle: 'Advanced AI-powered system for academic integrity',
+                feature1: 'Multi-format support (PDF, DOCX, TXT, RTF)',
+                feature2: 'Armenian language optimized with synonyms',
+                feature3: 'AI content detection with sentence analysis',
+                feature4: 'Real-time plagiarism highlighting',
+                feature5: 'Role-based dashboards for lecturers & students',
+                thesis: 'Bachelor\'s Thesis',
+                author: 'Lilit Khalafyan - Information Security',
+                university: 'National Polytechnic University',
+                welcomeTitle: 'Welcome Back',
+                welcomeSubtitle: 'Sign in to continue to your dashboard',
+                loginTab: 'Login',
+                registerTab: 'Register',
+                loginUsernameLabel: 'Username',
+                loginUsernamePlaceholder: 'Enter your username',
+                loginPasswordLabel: 'Password',
+                loginPasswordPlaceholder: 'Enter your password',
+                loginBtn: 'Sign In',
+                regUsernameLabel: 'Username',
+                regUsernamePlaceholder: 'Choose a username',
+                regFullNameLabel: 'Full Name',
+                regFullNamePlaceholder: 'Enter your full name',
+                regEmailLabel: 'Email',
+                regEmailPlaceholder: 'Enter your email',
+                regPasswordLabel: 'Password',
+                regPasswordPlaceholder: 'Create a password',
+                regConfirmLabel: 'Confirm Password',
+                regConfirmPlaceholder: 'Confirm your password',
+                roleLabel: 'Select Role',
+                lecturerRole: 'Lecturer',
+                studentRole: 'Student',
+                registerBtn: 'Create Account',
+                strengthWeak: 'Weak',
+                strengthMedium: 'Medium',
+                strengthStrong: 'Strong',
+                passwordMismatch: 'Passwords do not match',
+                testCredentials: 'Test Credentials',
+                lecturerCred: 'Lecturer:',
+                studentCred: 'Student:',
+                fillBtn: 'Fill',
+                errorFillAll: 'Please fill in all fields',
+                errorPasswordLength: 'Password must be at least 6 characters',
+                errorPasswordMatch: 'Passwords do not match',
+                errorEmailInvalid: 'Please enter a valid email address',
+                errorUsernameExists: 'Username or email already exists',
+                errorLogin: 'Invalid username or password',
+                errorConnection: 'Connection error. Please try again.',
+                successRegistration: 'Registration successful! Please login.',
+            },
+            hy: {
+                langEn: 'Անգլերեն',
+                langHy: 'Հայերեն',
+                infoTitle: 'Հայերեն Գրագողության Հայտնաբերում',
+                infoSubtitle: 'Ակադեմիական ազնվության առաջադեմ AI համակարգ',
+                feature1: 'Բազմաֆորմատ աջակցություն (PDF, DOCX, TXT, RTF)',
+                feature2: 'Հայերեն լեզվի օպտիմիզացում հոմանիշներով',
+                feature3: 'Արհեստական բանականության բովանդակության հայտնաբերում',
+                feature4: 'Իրական ժամանակի գրագողության ընդգծում',
+                feature5: 'Դերային վահանակներ՝ դասախոսների և ուսանողների համար',
+                thesis: 'Բակալավրիական թեզ',
+                author: 'Լիլիթ Խալաֆյան - Տեղեկատվական անվտանգություն',
+                university: 'Ազգային պոլիտեխնիկական համալսարան',
+                welcomeTitle: 'Բարի գալուստ',
+                welcomeSubtitle: 'Մուտք գործեք ձեր վահանակ',
+                loginTab: 'Մուտք',
+                registerTab: 'Գրանցում',
+                loginUsernameLabel: 'Օգտանուն',
+                loginUsernamePlaceholder: 'Մուտքագրեք ձեր օգտանունը',
+                loginPasswordLabel: 'Գաղտնաբառ',
+                loginPasswordPlaceholder: 'Մուտքագրեք ձեր գաղտնաբառը',
+                loginBtn: 'Մուտք',
+                regUsernameLabel: 'Օգտանուն',
+                regUsernamePlaceholder: 'Ընտրեք օգտանուն',
+                regFullNameLabel: 'Ամբողջական անուն',
+                regFullNamePlaceholder: 'Մուտքագրեք ձեր լրիվ անունը',
+                regEmailLabel: 'Էլ․ փոստ',
+                regEmailPlaceholder: 'Մուտքագրեք ձեր էլ․ փոստը',
+                regPasswordLabel: 'Գաղտնաբառ',
+                regPasswordPlaceholder: 'Ստեղծեք գաղտնաբառ',
+                regConfirmLabel: 'Հաստատել գաղտնաբառը',
+                regConfirmPlaceholder: 'Հաստատեք ձեր գաղտնաբառը',
+                roleLabel: 'Ընտրեք դերը',
+                lecturerRole: 'Դասախոս',
+                studentRole: 'Ուսանող',
+                registerBtn: 'Ստեղծել հաշիվ',
+                strengthWeak: 'Թույլ',
+                strengthMedium: 'Միջին',
+                strengthStrong: 'Ուժեղ',
+                passwordMismatch: 'Գաղտնաբառերը չեն համընկնում',
+                testCredentials: 'Փորձնական տվյալներ',
+                lecturerCred: 'Դասախոս:',
+                studentCred: 'Ուսանող:',
+                fillBtn: 'Լրացնել',
+                errorFillAll: 'Խնդրում ենք լրացնել բոլոր դաշտերը',
+                errorPasswordLength: 'Գաղտնաբառը պետք է լինի առնվազն 6 նիշ',
+                errorPasswordMatch: 'Գաղտնաբառերը չեն համընկնում',
+                errorEmailInvalid: 'Խնդրում ենք մուտքագրել վավեր էլ․ փոստ',
+                errorUsernameExists: 'Օգտանունը կամ էլ․ փոստն արդեն գոյություն ունի',
+                errorLogin: 'Սխալ օգտանուն կամ գաղտնաբառ',
+                errorConnection: 'Կապի սխալ։ Խնդրում ենք կրկին փորձել։',
+                successRegistration: 'Գրանցումը հաջողվեց! Խնդրում ենք մուտք գործել։',
+            }
+        };
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            loadLanguage();
+            
+            // Ensure register form is scrollable
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.style.display = 'none';
+            }
+        });
+
+        function checkAuthStatus() {
+            fetch(`${API_URL}/current-user`, {
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.user) {
+                    if (data.user.role === 'lecturer') {
+                        window.location.href = '/lecturer.html';
+                    } else {
+                        window.location.href = '/student.html';
+                    }
+                }
+            });
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            document.getElementById('langEn').classList.toggle('active', lang === 'en');
+            document.getElementById('langHy').classList.toggle('active', lang === 'hy');
+            
+            // Update all translatable elements
+            const elements = document.querySelectorAll('[id]');
+            elements.forEach(element => {
+                const id = element.id;
+                if (translations[lang][id]) {
+                                       if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        if (element.placeholder && translations[lang][id + 'Placeholder']) {
+                            element.placeholder = translations[lang][id + 'Placeholder'];
+                        }
+                    } else {
+                        element.textContent = translations[lang][id];
+                    }
+                }
+            });
+            
+            // Update placeholders
+            document.getElementById('loginUsername').placeholder = translations[lang].loginUsernamePlaceholder;
+            document.getElementById('loginPassword').placeholder = translations[lang].loginPasswordPlaceholder;
+            document.getElementById('regUsername').placeholder = translations[lang].regUsernamePlaceholder;
+            document.getElementById('regFullName').placeholder = translations[lang].regFullNamePlaceholder;
+            document.getElementById('regEmail').placeholder = translations[lang].regEmailPlaceholder;
+            document.getElementById('regPassword').placeholder = translations[lang].regPasswordPlaceholder;
+            document.getElementById('regConfirmPassword').placeholder = translations[lang].regConfirmPlaceholder;
+            
+            // Update buttons
+            document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${translations[lang].loginBtn}`;
+            document.getElementById('registerBtn').innerHTML = `<i class="fas fa-user-plus"></i> ${translations[lang].registerBtn}`;
+            
+            // Update toggle buttons
+            document.querySelector('#loginToggle span').textContent = translations[lang].loginTab;
+            document.querySelector('#registerToggle span').textContent = translations[lang].registerTab;
+            
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        function loadLanguage() {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            setLanguage(savedLang);
+        }
+
+        function switchForm(form) {
+            if (form === 'login') {
+                document.getElementById('loginToggle').classList.add('active');
+                document.getElementById('registerToggle').classList.remove('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('loginError').classList.remove('show');
+                document.getElementById('registerError').classList.remove('show');
+                document.getElementById('registerSuccess').classList.remove('show');
+            } else {
+                document.getElementById('registerToggle').classList.add('active');
+                document.getElementById('loginToggle').classList.remove('active');
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('loginError').classList.remove('show');
+                document.getElementById('registerError').classList.remove('show');
+                document.getElementById('registerSuccess').classList.remove('show');
+                
+                // Scroll to top of form panel when switching to register
+                document.querySelector('.form-panel').scrollTop = 0;
+            }
+        }
+
+        function selectRole(role) {
+            selectedRole = role;
+            if (role === 'lecturer') {
+                document.getElementById('roleLecturer').classList.add('selected');
+                document.getElementById('roleStudent').classList.remove('selected');
+            } else {
+                document.getElementById('roleStudent').classList.add('selected');
+                document.getElementById('roleLecturer').classList.remove('selected');
+            }
+        }
+
+        function fillCredentials(role) {
+            switchForm('login');
+            if (role === 'lecturer') {
+                document.getElementById('loginUsername').value = 'lecturer';
+                document.getElementById('loginPassword').value = 'lecturer123';
+            } else {
+                document.getElementById('loginUsername').value = 'student';
+                document.getElementById('loginPassword').value = 'student123';
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('regPassword').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (!password) {
+                strengthBar.className = 'strength-bar';
+                strengthText.textContent = '';
+                return;
+            }
+            
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 1;
+            if (password.length >= 12) strength += 1;
+            if (/[a-z]/.test(password)) strength += 1;
+            if (/[A-Z]/.test(password)) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+            
+            strengthBar.className = 'strength-bar';
+            
+            if (strength < 3) {
+                strengthBar.classList.add('weak');
+                strengthText.textContent = translations[currentLanguage].strengthWeak;
+            } else if (strength < 5) {
+                strengthBar.classList.add('medium');
+                strengthText.textContent = translations[currentLanguage].strengthMedium;
+            } else {
+                strengthBar.classList.add('strong');
+                strengthText.textContent = translations[currentLanguage].strengthStrong;
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                errorDiv.textContent = translations[currentLanguage].errorFillAll;
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.user.role === 'lecturer') {
+                        window.location.href = '/lecturer.html';
+                    } else {
+                        window.location.href = '/student.html';
+                    }
+                } else {
+                    errorDiv.textContent = translations[currentLanguage].errorLogin;
+                    errorDiv.classList.add('show');
+                }
+            } catch (error) {
+                errorDiv.textContent = translations[currentLanguage].errorConnection;
+                errorDiv.classList.add('show');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('regUsername').value.trim();
+            const fullName = document.getElementById('regFullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+            
+            if (!username || !fullName || !email || !password || !confirmPassword) {
+                errorDiv.textContent = translations[currentLanguage].errorFillAll;
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorDiv.textContent = translations[currentLanguage].errorEmailInvalid;
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.textContent = translations[currentLanguage].errorPasswordLength;
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorDiv.textContent = translations[currentLanguage].errorPasswordMatch;
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            const originalText = registerBtn.innerHTML;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (currentLanguage === 'en' ? 'Creating...' : 'Ստեղծվում...');
+            registerBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        full_name: fullName,
+                        email,
+                        password,
+                        role: selectedRole
+                    }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    successDiv.textContent = translations[currentLanguage].successRegistration;
+                    successDiv.classList.add('show');
+                    
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regFullName').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regConfirmPassword').value = '';
+                    document.getElementById('strengthBar').className = 'strength-bar';
+                    document.getElementById('strengthText').textContent = '';
+                    
+                    setTimeout(() => {
+                        switchForm('login');
+                        document.getElementById('loginUsername').value = username;
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.error || translations[currentLanguage].errorUsernameExists;
+                    errorDiv.classList.add('show');
+                }
+            } catch (error) {
+                errorDiv.textContent = translations[currentLanguage].errorConnection;
+                errorDiv.classList.add('show');
+            } finally {
+                registerBtn.innerHTML = originalText;
+                registerBtn.disabled = false;
+            }
+        }
+
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('loginForm').style.display !== 'none') {
+                    login();
+                } else {
+                    register();
+                }
+            }
+        });
+
+        // Real-time password match check
+        document.getElementById('regConfirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('regPassword').value;
+            const confirm = this.value;
+            const errorDiv = document.getElementById('registerError');
+            
+            if (confirm && password !== confirm) {
+                errorDiv.textContent = translations[currentLanguage].passwordMismatch;
+                errorDiv.classList.add('show');
+            } else {
+                errorDiv.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
