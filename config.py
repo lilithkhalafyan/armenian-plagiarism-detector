@@ -4,6 +4,9 @@ import os
 import json
 import logging
 import secrets
+import time
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # ==================================================
 # LOGGING CONFIGURATION
@@ -22,12 +25,12 @@ logger = logging.getLogger('plagiarism_detector')
 # ==================================================
 # PATHS / FILES
 # ==================================================
-UPLOAD_FOLDER = 'uploads'
-DB_PATH = 'plagiarism.db'
-SYNONYMS_FILE = 'armenian_synonyms.json'
-THEME_KEYWORDS_FILE = 'theme_keywords.json'
-STOPWORDS_FILE = 'armenian_stopwords.json'
-AI_PATTERNS_FILE = 'armenian_ai_patterns.json'
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+DB_PATH = os.path.join(BASE_DIR, 'plagiarism.db')
+SYNONYMS_FILE = os.path.join(BASE_DIR, 'armenian_synonyms.json')
+THEME_KEYWORDS_FILE = os.path.join(BASE_DIR, 'theme_keywords.json')
+STOPWORDS_FILE = os.path.join(BASE_DIR, 'armenian_stopwords.json')
+AI_PATTERNS_FILE = os.path.join(BASE_DIR, 'armenian_ai_patterns.json')
 
 # ==================================================
 # DEFAULTS
@@ -165,8 +168,23 @@ SEMANTIC_MODEL = None
 if MODEL_AVAILABLE:
     try:
         logger.info("🔄 Loading sentence transformer model...")
+        start_time = time.time()
         SEMANTIC_MODEL = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+        elapsed = time.time() - start_time
+        if elapsed > 30:
+            raise TimeoutError(f"SentenceTransformer load exceeded 30 seconds ({elapsed:.1f}s)")
         logger.info("✅ Semantic model loaded successfully")
     except Exception as e:
-        logger.error(f"❌ Could not load semantic model: {e}")
-        SEMANTIC_MODEL = None
+        logger.warning(f"⚠️ Could not load paraphrase-multilingual-MiniLM-L12-v2: {e}")
+        logger.info("🔄 Falling back to smaller model all-MiniLM-L6-v2")
+        try:
+            start_time = time.time()
+            SEMANTIC_MODEL = SentenceTransformer('all-MiniLM-L6-v2')
+            elapsed = time.time() - start_time
+            if elapsed > 30:
+                raise TimeoutError(f"Fallback model load exceeded 30 seconds ({elapsed:.1f}s)")
+            logger.info("✅ Fallback semantic model loaded successfully")
+        except Exception as e2:
+            logger.error(f"❌ Could not load fallback semantic model: {e2}")
+            SEMANTIC_MODEL = None
+            MODEL_AVAILABLE = False

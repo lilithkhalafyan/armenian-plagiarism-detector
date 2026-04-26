@@ -98,8 +98,11 @@ def get_plagiarism_level(similarity: float) -> str:
 
 
 def highlight_word_level(text1: str, text2: str) -> dict:
-    """Create word-level highlighting for comparison."""
-
+    """
+    Create word-level highlighting for comparison.
+    GUARANTEES that both file1 and file2 have a 'words' array for every sentence,
+    even when similarity is 100% or an error occurs.
+    """
     # Clean texts
     text1 = re.sub(r'\s+', ' ', text1).strip()
     text2 = re.sub(r'\s+', ' ', text2).strip()
@@ -108,14 +111,21 @@ def highlight_word_level(text1: str, text2: str) -> dict:
     sentences1 = re.split(r'[.!?…]+', text1)
     sentences2 = re.split(r'[.!?…]+', text2)
 
+    # Filter out very short sentences (less than 5 chars)
     sentences1 = [s.strip() for s in sentences1 if len(s.strip()) > 5]
     sentences2 = [s.strip() for s in sentences2 if len(s.strip()) > 5]
 
-    # If no sentences, treat whole text as one sentence
+    # Fallback: if no sentences, treat whole text as one sentence
     if not sentences1 and text1:
         sentences1 = [text1]
     if not sentences2 and text2:
         sentences2 = [text2]
+
+    # If still empty, create dummy sentence to avoid empty UI
+    if not sentences1:
+        sentences1 = ["[No readable content in file 1]"]
+    if not sentences2:
+        sentences2 = ["[No readable content in file 2]"]
 
     result = {
         'file1': [],
@@ -125,11 +135,28 @@ def highlight_word_level(text1: str, text2: str) -> dict:
 
     logger.info(f"📊 Highlighting: {len(sentences1)} sentences in file1, {len(sentences2)} in file2")
 
-    # Process file1 sentences
+    # ------------------------------------------------------------
+    # Helper to build word array from a sentence (always returns list)
+    # ------------------------------------------------------------
+    def build_word_array(sentence: str, plagiarized_flags=None):
+        """Convert sentence into list of {text, plagiarized} dicts."""
+        words = sentence.split()
+        if not words:
+            return [{'text': '', 'plagiarized': False}]
+        if plagiarized_flags is None:
+            plagiarized_flags = [False] * len(words)
+        return [{'text': w, 'plagiarized': plagiarized_flags[i] if i < len(plagiarized_flags) else False} 
+                for i, w in enumerate(words)]
+
+    # ------------------------------------------------------------
+    # Build matches for file1
+    # ------------------------------------------------------------
+    file2_to_file1 = {}   # map sentence index in file2 -> (file1_index, similarity)
+
     for i, sent1 in enumerate(sentences1):
         try:
             words1 = sent1.split()
-            sent_result = {
+            sent1_result = {
                 'text': sent1,
                 'words': [],
                 'plagiarized': False,
@@ -140,105 +167,116 @@ def highlight_word_level(text1: str, text2: str) -> dict:
             best_match_idx = -1
             best_similarity = 0
 
-            # Find best matching sentence in file2
+            # Find best match in file2
             for j, sent2 in enumerate(sentences2):
-                words2 = sent2.split()
-
-                if words1 and words2:
-                    similarity = calculate_basic_similarity(sent1, sent2)
-                else:
-                    similarity = 0
-
+                similarity = calculate_basic_similarity(sent1, sent2)
                 if similarity > best_similarity:
                     best_similarity = similarity
                     best_match_idx = j
 
-            # Lower threshold to catch plagiarism
-            if best_similarity > 15:  # Threshold at 15%
-                sent_result['plagiarized'] = True
-                sent_result['similarity'] = round(float(best_similarity), 1)
-                sent_result['matched_with'] = best_match_idx
+            # Threshold for plagiarism (5%)
+            if best_similarity > 5:
+                sent1_result['plagiarized'] = True
+                sent1_result['similarity'] = round(float(best_similarity), 1)
+                sent1_result['matched_with'] = best_match_idx
 
-                # Mark individual words as plagiarized
+                # Word-level marking for file1
                 if best_match_idx >= 0 and best_match_idx < len(sentences2):
                     match_sent = sentences2[best_match_idx]
-                    match_words = set(match_sent.split())
+                    match_words = {w.lower() for w in match_sent.split() if len(w) >= 3}
+                    word_flags = []
                     for word in words1:
-                        sent_result['words'].append({
-                            'text': word,
-                            'plagiarized': word in match_words
-                        })
-
-                    result['matches'].append({
-                        'file1_sentence': i,
-                        'file2_sentence': best_match_idx,
-                        'similarity': sent_result['similarity']
-                    })
+                        word_lower = word.lower()
+                        is_plag = len(word) >= 3 and best_similarity > 5 and word_lower in match_words
+                        word_flags.append(is_plag)
+                    sent1_result['words'] = build_word_array(sent1, word_flags)
+                    
+                    # Store mapping for file2
+                    file2_to_file1[best_match_idx] = (i, sent1_result['similarity'])
                 else:
-                    for word in words1:
-                        sent_result['words'].append({'text': word, 'plagiarized': False})
+                    sent1_result['words'] = build_word_array(sent1, [False] * len(words1))
             else:
                 # Not plagiarized
-                for word in words1:
-                    sent_result['words'].append({'text': word, 'plagiarized': False})
+                sent1_result['words'] = build_word_array(sent1, [False] * len(words1))
 
-            result['file1'].append(sent_result)
+            result['file1'].append(sent1_result)
+
+            if best_match_idx != -1 and best_similarity > 5:
+                result['matches'].append({
+                    'file1_sentence': i,
+                    'file2_sentence': best_match_idx,
+                    'similarity': sent1_result['similarity']
+                })
 
         except Exception as e:
-            logger.warning(f"Error processing file1 sentence {i}: {e}")
-            words = sent1.split() if sent1 else []
+            logger.error(f"Error processing file1 sentence {i}: {e}")
+            # Fallback: create a default sentence with no highlighting
             result['file1'].append({
-                'text': sent1[:100] + "..." if sent1 else "",
-                'words': [{'text': w, 'plagiarized': False} for w in words[:10]],
+                'text': sentences1[i] if i < len(sentences1) else "[Error processing sentence]",
+                'words': build_word_array(sentences1[i] if i < len(sentences1) else "", [False]),
                 'plagiarized': False,
-                'similarity': 0
+                'similarity': 0,
+                'matched_with': -1
             })
 
-    # Process file2 sentences
+    # ------------------------------------------------------------
+    # Process file2 sentences – ALWAYS populate words
+    # ------------------------------------------------------------
     for j, sent2 in enumerate(sentences2):
         try:
             words2 = sent2.split()
-            sent_result = {
+            sent2_result = {
                 'text': sent2,
                 'words': [],
                 'plagiarized': False,
                 'similarity': 0
             }
 
-            # Check if this sentence matches any in file1
-            matched = False
-            for match in result['matches']:
-                if match['file2_sentence'] == j:
-                    matched = True
-                    sent_result['plagiarized'] = True
-                    sent_result['similarity'] = match['similarity']
-                    break
+            # Check if this sentence matches any from file1
+            if j in file2_to_file1:
+                file1_idx, sim = file2_to_file1[j]
+                sent2_result['plagiarized'] = True
+                sent2_result['similarity'] = sim
 
-            if not matched:
+                # Retrieve matching file1 sentence for word-level comparison
+                matched_sent1 = sentences1[file1_idx] if file1_idx < len(sentences1) else ""
+                match_words1 = {w.lower() for w in matched_sent1.split() if len(w) >= 3}
+                word_flags = []
                 for word in words2:
-                    sent_result['words'].append({'text': word, 'plagiarized': False})
+                    word_lower = word.lower()
+                    is_plag = len(word) >= 3 and sim > 5 and word_lower in match_words1
+                    word_flags.append(is_plag)
+                sent2_result['words'] = build_word_array(sent2, word_flags)
+            else:
+                # Unmatched – no plagiarism
+                sent2_result['words'] = build_word_array(sent2, [False] * len(words2))
 
-            result['file2'].append(sent_result)
+            result['file2'].append(sent2_result)
 
         except Exception as e:
-            logger.warning(f"Error processing file2 sentence {j}: {e}")
-            words = sent2.split() if sent2 else []
+            logger.error(f"Error processing file2 sentence {j}: {e}")
+            # FALLBACK – critical: ensure file2 always has some content
             result['file2'].append({
-                'text': sent2[:100] + "..." if sent2 else "",
-                'words': [{'text': w, 'plagiarized': False} for w in words[:10]],
+                'text': sentences2[j] if j < len(sentences2) else "[Error processing sentence]",
+                'words': build_word_array(sentences2[j] if j < len(sentences2) else "", [False]),
                 'plagiarized': False,
                 'similarity': 0
             })
 
-    # Log results
-    total_plagiarized = sum(1 for s in result['file1'] if s['plagiarized'])
-    total_words_plagiarized = 0
-    for sent in result['file1']:
-        if sent.get('plagiarized'):
-            for word in sent.get('words', []):
-                if word.get('plagiarized'):
-                    total_words_plagiarized += 1
+    # Final safety: if result['file2'] is empty for any reason, add the whole text as one sentence
+    if not result['file2'] and text2:
+        logger.warning("File2 had no sentences after processing – adding full text as fallback")
+        result['file2'] = [{
+            'text': text2[:500],
+            'words': build_word_array(text2[:500], [False]),
+            'plagiarized': False,
+            'similarity': 0
+        }]
 
-    logger.info(f"✅ Highlighting complete: {total_plagiarized} plagiarized sentences, {total_words_plagiarized} plagiarized words")
-
+    # Log summary
+    plag_sent_file1 = sum(1 for s in result['file1'] if s.get('plagiarized', False))
+    plag_sent_file2 = sum(1 for s in result['file2'] if s.get('plagiarized', False))
+    logger.info(f"✅ Highlighting complete: File1: {plag_sent_file1}/{len(result['file1'])} plagiarized sentences, "
+                f"File2: {plag_sent_file2}/{len(result['file2'])} plagiarized sentences")
+    
     return result

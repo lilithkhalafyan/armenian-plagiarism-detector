@@ -218,10 +218,10 @@ def record_plagiarism_result(session_id: int, file1_id: int, file2_id: int,
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             session_id, file1_id, file2_id,
-            float(similarities['combined_similarity']),
-            float(similarities['basic_similarity']),
+            float(similarities.get('combined_similarity', 0)),
+            float(similarities.get('basic_similarity', 0)),
             float(similarities.get('tfidf_similarity', 0)),
-            float(similarities['semantic_similarity']),
+            float(similarities.get('semantic_similarity', 0)),
             level,
             json.dumps(details) if details else None
         ))

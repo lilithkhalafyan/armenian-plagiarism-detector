@@ -1,5 +1,6 @@
 """File extraction and text preprocessing utilities."""
 
+import importlib.util
 import os
 import re
 import subprocess
@@ -30,7 +31,7 @@ def extract_text_from_pdf(filepath: str) -> str:
             if page_text:
                 text += page_text + "\n"
 
-        if len(text.strip()) > 50:
+        if len(text.strip()) > 0:
             logger.info(f"✅ PyPDF2 extracted {len(text)} chars")
             return text
     except Exception as e:
@@ -38,35 +39,37 @@ def extract_text_from_pdf(filepath: str) -> str:
 
     # Method 2: Try pdfplumber if available (better for complex PDFs)
     text = ""
-    try:
-        import pdfplumber
-        with pdfplumber.open(filepath) as pdf:
-            for page in pdf.pages:
-                page_text = page.extract_text() or ""
-                if page_text:
-                    text += page_text + "\n"
+    if importlib.util.find_spec('pdfplumber') is not None:
+        try:
+            import pdfplumber
+            with pdfplumber.open(filepath) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text() or ""
+                    if page_text:
+                        text += page_text + "\n"
 
-        if len(text.strip()) > 50:
-            logger.info(f"✅ pdfplumber extracted {len(text)} chars")
-            return text
-    except ImportError:
+            if len(text.strip()) > 0:
+                logger.info(f"✅ pdfplumber extracted {len(text)} chars")
+                return text
+        except Exception as e:
+            logger.warning(f"pdfplumber failed: {e}")
+    else:
         logger.warning("pdfplumber not installed")
-    except Exception as e:
-        logger.warning(f"pdfplumber failed: {e}")
 
     # Method 3: Try tika if available (Apache Tika - most robust)
-    try:
-        from tika import parser
-        parsed = parser.from_file(filepath)
-        if parsed and parsed.get('content'):
-            text = parsed['content']
-            if len(text.strip()) > 50:
-                logger.info(f"✅ Tika extracted {len(text)} chars")
-                return text
-    except ImportError:
+    if importlib.util.find_spec('tika') is not None:
+        try:
+            from tika import parser
+            parsed = parser.from_file(filepath)
+            if parsed and parsed.get('content'):
+                text = parsed['content']
+                if len(text.strip()) > 0:
+                    logger.info(f"✅ Tika extracted {len(text)} chars")
+                    return text
+        except Exception as e:
+            logger.warning(f"Tika failed: {e}")
+    else:
         logger.warning("tika not installed")
-    except Exception as e:
-        logger.warning(f"Tika failed: {e}")
 
     # Method 4: Fallback - try to extract any text as bytes
     try:
@@ -78,21 +81,28 @@ def extract_text_from_pdf(filepath: str) -> str:
             text = re.sub(r'[^\x20-\x7E\u0530-\u058F\s]', ' ', text)
             text = re.sub(r'\s+', ' ', text)
 
-            if len(text.strip()) > 50:
+            if len(text.strip()) > 0:
                 logger.info(f"✅ Raw extraction got {len(text)} chars")
                 return text
     except Exception as e:
         logger.warning(f"Raw extraction failed: {e}")
 
     logger.error(f"❌ All PDF extraction methods failed for {filepath}")
-    return ""
+    raise RuntimeError(f"Could not extract text from {filepath}. Install pdfplumber or tika.")
 
 
 def extract_text_from_docx(filepath: str) -> str:
     """Extract text from DOCX."""
     try:
         doc = Document(filepath)
-        text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+        texts = [paragraph.text for paragraph in doc.paragraphs if paragraph.text]
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    if cell.text:
+                        texts.append(cell.text)
+
+        text = "\n".join(texts)
         logger.info(f"✅ Extracted {len(text)} characters from DOCX")
         return text
     except Exception as e:
@@ -160,8 +170,8 @@ def load_text(filepath: str) -> str:
             return ""
 
         # Validate extracted text
-        if not text or len(text.strip()) < 20:
-            logger.warning(f"❌ Extracted text too short ({len(text)} chars) from {filepath}")
+        if not text or not text.strip():
+            logger.warning(f"❌ No text extracted from {filepath}")
             return ""
 
         # Clean the text
@@ -187,8 +197,8 @@ def preprocess_text(text: str, use_synonyms: bool = True, remove_stopwords: bool
     # Remove numbers
     text = re.sub(r'\d+', ' ', text)
 
-    # Keep only Armenian letters and spaces
-    text = re.sub(r'[^ա-ֆ\s]', ' ', text)
+    # Keep Armenian letters plus English technical terms and numbers
+    text = re.sub(r'[^ա-ֆA-Za-z0-9\s]', ' ', text)
 
     # Normalize whitespace
     text = re.sub(r'\s+', ' ', text).strip()

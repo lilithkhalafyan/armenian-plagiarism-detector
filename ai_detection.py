@@ -45,13 +45,13 @@ def detect_ai_content(text: str, detailed: bool = False) -> dict:
 
     overused_count = 0
     for word in overused_words:
-        count = text_lower.count(' ' + word + ' ')
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', text_lower))
         if count > 0:
             overused_count += count
 
     formal_count = 0
     for word in formal_words:
-        count = text_lower.count(word)
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', text_lower))
         if count > 0:
             formal_count += count
 
@@ -62,7 +62,7 @@ def detect_ai_content(text: str, detailed: bool = False) -> dict:
 
     transition_count = 0
     for word in transitions:
-        count = text_lower.count(' ' + word + ' ')
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', text_lower))
         if count > 0:
             transition_count += count
 

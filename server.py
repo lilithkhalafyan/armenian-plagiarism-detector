@@ -209,8 +209,8 @@ def login():
             
             c.execute('''
                 SELECT id, username, full_name, email, password_hash, salt, role 
-                FROM users WHERE username = ? AND is_active = 1
-            ''', (username,))
+                FROM users WHERE (username = ? OR email = ?) AND is_active = 1
+            ''', (username, username))
             
             user = c.fetchone()
             
@@ -298,7 +298,7 @@ def armenian_plagiarism_check():
     
     try:
         user_id = session['user_id']
-        user_role = session.get('role', 'student')
+        user_role = session.get('role')
         
         if 'files' not in request.files:
             return jsonify({"error": "No files uploaded"}), 400
@@ -339,10 +339,10 @@ def armenian_plagiarism_check():
                     
                     # Extract text
                     text = load_text(filepath)
-                    if not text or len(text.strip()) < 50:
+                    if not text or len(text.strip()) < 20:
                         problematic_files.append({
                             'name': file.filename,
-                            'reason': 'Could not extract text or text too short'
+                            'reason': 'Could not extract text or text too short (minimum 20 characters)'
                         })
                         os.remove(filepath)
                         continue
@@ -449,7 +449,6 @@ def armenian_plagiarism_check():
                 
                 level = get_plagiarism_level(similarities['combined_similarity'])
                 
-                # For lecturers, include detailed highlighting
                 details = None
                 if user_role == 'lecturer':
                     details = highlight_word_level(
@@ -476,7 +475,7 @@ def armenian_plagiarism_check():
                     "plagiarism_level": level
                 }
                 
-                if user_role == 'lecturer' and details:
+                if details:
                     result_item['highlighting'] = details
                 
                 results.append(result_item)
@@ -1098,6 +1097,71 @@ def reply_to_feedback(feedback_id):
 # ==================================================
 # API ENDPOINTS - SUBMISSIONS
 # ==================================================
+
+@app.route('/api/feedback/enhanced/<int:feedback_id>')
+@app.route('/api/feedback/enhanced/<int:feedback_id>', methods=['GET'])
+@login_required
+def get_single_feedback(feedback_id):
+    """Get a single feedback item by ID (for students to view details)."""
+    try:
+        with get_db() as conn:         # ✅ Use the correct connection function
+            c = conn.cursor()
+            # ✅ Use the correct table name 'enhanced_feedback'
+            c.execute('''
+                SELECT id, subject, message, reply, status, created_at, user_id
+                FROM enhanced_feedback
+                WHERE id = ?
+            ''', (feedback_id,))
+            row = c.fetchone()
+            
+            if not row:
+                return jsonify({'success': False, 'error': 'Feedback not found'}), 404
+            
+            # Get student name for display
+            c.execute('SELECT full_name FROM users WHERE id = ?', (row['user_id'],))
+            user = c.fetchone()
+            
+            return jsonify({
+                'success': True,
+                'feedback': {
+                    'id': row['id'],
+                    'subject': row['subject'],
+                    'message': row['message'],
+                    'reply': row['reply'],
+                    'status': row['status'],
+                    'created_at': row['created_at'],
+                    'full_name': user['full_name'] if user else 'Student'
+                }
+            })
+    except Exception as e:
+        logger.error(f"Error getting single feedback: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT id, subject, message, reply, status, created_at, user_id
+        FROM feedback
+        WHERE id = ?
+    ''', (feedback_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if row:
+        return jsonify({
+            'success': True,
+            'feedback': {
+                'id': row['id'],
+                'subject': row['subject'],
+                'message': row['message'],
+                'reply': row['reply'],
+                'status': row['status'],
+                'created_at': row['created_at']
+            }
+        })
+    else:
+        return jsonify({'success': False, 'error': 'Feedback not found'}), 404
+    
+
 @app.route('/api/submissions', methods=['POST', 'OPTIONS'])
 @student_required
 def record_submission():
@@ -1801,7 +1865,21 @@ def index():
 
 @app.route('/<path:path>')
 def serve_file(path):
-    return send_from_directory('.', path)
+    # Protect against path traversal and restricted system files
+    if '..' in path or path.startswith('/'):
+        return jsonify({'success': False, 'error': 'Invalid file path'}), 400
+
+    normalized_path = os.path.normpath(path)
+    blocked_paths = ('config', 'server.py', 'plagiarism.db')
+    if normalized_path.lower().startswith(blocked_paths):
+        return jsonify({'success': False, 'error': 'Invalid file path'}), 400
+
+    allowed_extensions = {'.html', '.css', '.js', '.json', '.png', '.jpg'}
+    extension = os.path.splitext(normalized_path)[1].lower()
+    if extension not in allowed_extensions:
+        return jsonify({'success': False, 'error': 'Unsupported file type'}), 400
+
+    return send_from_directory('.', normalized_path)
 
 @app.route('/lecturer.html')
 def lecturer_page():

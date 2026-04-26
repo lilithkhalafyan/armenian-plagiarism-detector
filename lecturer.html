@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,7 @@
             --gray: #6c757d;
             --border: #e2e8f0;
             --sidebar-width: 280px;
-            
+
             --plagiarism-critical: #f72585;
             --plagiarism-high: #f8961e;
             --plagiarism-moderate: #ffd166;
@@ -56,7 +57,7 @@
             color: white;
             padding: 2rem 1.5rem;
             z-index: 1000;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
         }
 
@@ -68,7 +69,7 @@
             font-weight: 700;
             margin-bottom: 2.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-brand i {
@@ -90,7 +91,7 @@
             align-items: center;
             gap: 12px;
             padding: 1rem 1.2rem;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             border-radius: 12px;
             transition: all 0.3s ease;
@@ -109,7 +110,7 @@
         }
 
         .sidebar-menu-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             transform: translateX(5px);
         }
@@ -142,12 +143,12 @@
         }
 
         .top-navbar {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 1rem 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -227,7 +228,7 @@
             background: white;
             border-radius: 20px;
             padding: 1.8rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             cursor: pointer;
             border: 1px solid var(--border);
@@ -278,15 +279,22 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .table-container {
             background: white;
             border-radius: 20px;
             padding: 1.8rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
         }
 
@@ -426,10 +434,21 @@
             transition: width 0.3s ease;
         }
 
-        .similarity-fill.critical { background: var(--plagiarism-critical); }
-        .similarity-fill.high { background: var(--plagiarism-high); }
-        .similarity-fill.moderate { background: var(--plagiarism-moderate); }
-        .similarity-fill.low { background: var(--plagiarism-low); }
+        .similarity-fill.critical {
+            background: var(--plagiarism-critical);
+        }
+
+        .similarity-fill.high {
+            background: var(--plagiarism-high);
+        }
+
+        .similarity-fill.moderate {
+            background: var(--plagiarism-moderate);
+        }
+
+        .similarity-fill.low {
+            background: var(--plagiarism-low);
+        }
 
         .btn-modern {
             padding: 0.5rem 1.2rem;
@@ -525,15 +544,20 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Modal Styles */
         .modal-content {
             border-radius: 20px;
             border: none;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
@@ -570,7 +594,7 @@
             background: white;
             border-radius: 10px;
             padding: 1rem 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -588,8 +612,15 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
@@ -597,15 +628,15 @@
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
-            
+
             .sidebar.show {
                 transform: translateX(0);
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             #menuToggle {
                 display: block;
                 position: fixed;
@@ -758,9 +789,74 @@
             right: 1rem;
             top: 1rem;
         }
+
+        /* Language Switcher - Fixed Position */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            border-radius: 40px;
+            color: #6c757d;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn i {
+            font-size: 1.2rem;
+        }
+
+        .lang-btn.active {
+            background: #4361ee;
+            color: white;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+        }
+
+        .lang-btn.en.active {
+            background: #4361ee;
+        }
+
+        .lang-btn.hy.active {
+            background: #4361ee;
+        }
+
+        .lang-btn.hy.active i {
+            color: #fff;
+        }
     </style>
 </head>
+
 <body>
+
+    <!-- Language Switcher - Fixed Position -->
+    <div class="language-switcher">
+        <button class="lang-btn en active" onclick="Translations.setLanguage('en')" id="langEn">
+            <span>English</span>
+        </button>
+        <button class="lang-btn hy" onclick="Translations.setLanguage('hy')" id="langHy">
+            <span>Հայերեն</span>
+        </button>
+    </div>
+
     <!-- Modals -->
     <div class="modal fade" id="infoModal" tabindex="-1">
         <div class="modal-dialog">
@@ -768,7 +864,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-info-circle"></i>
-                        <span id="infoModalTitle">Information</span>
+                        <span id="infoModalTitle" data-translate="info">Information</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -776,7 +872,7 @@
                     <p id="infoModalMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -788,7 +884,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-question-circle"></i>
-                        <span id="confirmModalTitle">Confirm Action</span>
+                        <span id="confirmModalTitle" data-translate="confirm_action">Confirm Action</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -796,8 +892,9 @@
                     <p id="confirmModalMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmModalBtn" onclick="confirmAction()">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmModalBtn"
+                        onclick="confirmAction()" data-translate="confirm">Confirm</button>
                 </div>
             </div>
         </div>
@@ -809,7 +906,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-search"></i>
-                        <span id="plagiarismModalTitle">Plagiarism Details</span>
+                        <span id="plagiarismModalTitle" data-translate="plagiarism_details">Plagiarism Details</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -817,7 +914,7 @@
                     Loading...
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -829,26 +926,27 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-reply"></i>
-                        Answer Question
+                        <span data-translate="answer_question">Answer Question</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Question from <span id="questionStudentName"></span></label>
+                        <label class="form-label fw-bold" data-translate="question_from">Question from</label> <span id="questionStudentName"></span>
                         <div class="p-3 bg-light rounded mb-3">
                             <strong id="questionTitle"></strong>
                             <p id="questionText" class="mt-2 text-muted"></p>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Your Answer</label>
-                        <textarea id="answerText" class="form-control" rows="5" placeholder="Write your answer..."></textarea>
+                        <label class="form-label" data-translate="your_answer">Your Answer</label>
+                        <textarea id="answerText" class="form-control" rows="5"
+                            data-translate-placeholder="write_answer" placeholder="Write your answer..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitAnswer()">Submit Answer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAnswer()" data-translate="submit_answer">Submit Answer</button>
                 </div>
             </div>
         </div>
@@ -860,26 +958,70 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-reply"></i>
-                        Reply to Feedback
+                        <span data-translate="reply_feedback">Reply to Feedback</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Feedback from <span id="feedbackStudentName"></span></label>
+                        <label class="form-label fw-bold" data-translate="feedback_from">Feedback from</label> <span id="feedbackStudentName"></span>
                         <div class="p-3 bg-light rounded mb-3">
                             <strong id="feedbackSubject"></strong>
                             <p id="feedbackMessage" class="mt-2 text-muted"></p>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Your Reply</label>
-                        <textarea id="replyText" class="form-control" rows="5" placeholder="Write your reply..."></textarea>
+                        <label class="form-label" data-translate="your_reply">Your Reply</label>
+                        <textarea id="replyText" class="form-control" rows="5"
+                            data-translate-placeholder="write_reply" placeholder="Write your reply..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitReply()">Send Reply</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitReply()" data-translate="send_reply">Send Reply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing feedback details (Lecturer) -->
+    <div class="modal fade" id="viewFeedbackModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-comment-dots"></i> <span data-translate="feedback_details">Feedback Details</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="from">From:</label>
+                        <p id="viewFeedbackStudent" class="border-bottom pb-2"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="subject">Subject:</label>
+                        <p id="viewFeedbackSubject" class="border-bottom pb-2"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="students_message">Student's Message:</label>
+                        <p id="viewFeedbackMessage" class="bg-light p-3 rounded"></p>
+                    </div>
+                    <div class="mb-3" id="viewReplyContainer" style="display: none;">
+                        <label class="fw-bold text-success" data-translate="your_reply">Your Reply:</label>
+                        <p id="viewFeedbackReply" class="bg-success bg-opacity-10 p-3 rounded"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="status">Status:</label>
+                        <span id="viewFeedbackStatus" class="badge"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="received">Received:</label>
+                        <p id="viewFeedbackDate" class="text-muted"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -889,52 +1031,52 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <i class="fas fa-shield-alt"></i>
-            <span>Lecturer Panel</span>
+            <span data-translate="lecturer_panel">Lecturer Panel</span>
         </div>
-        
+
         <div class="sidebar-menu">
             <button class="sidebar-menu-link active" onclick="showSection('dashboard')">
                 <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+                <span data-translate="nav_dashboard">Dashboard</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('students')">
                 <i class="fas fa-users"></i>
-                <span>Students</span>
+                <span data-translate="nav_students">Students</span>
                 <span class="badge-count" id="sidebarStudentsCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('upload')">
                 <i class="fas fa-cloud-upload-alt"></i>
-                <span>Upload & Check</span>
+                <span data-translate="nav_upload">Upload & Check</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('submissions')">
                 <i class="fas fa-file-upload"></i>
-                <span>Submissions</span>
+                <span data-translate="nav_submissions">Submissions</span>
                 <span class="badge-count" id="sidebarSubmissionsCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('questions')">
                 <i class="fas fa-question-circle"></i>
-                <span>Questions</span>
+                <span data-translate="nav_questions">Questions</span>
                 <span class="badge-count" id="sidebarQuestionsCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('feedback')">
                 <i class="fas fa-comments"></i>
-                <span>Feedback</span>
+                <span data-translate="nav_feedback">Feedback</span>
                 <span class="badge-count" id="sidebarFeedbackCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('plagiarism')">
                 <i class="fas fa-chart-line"></i>
-                <span>Plagiarism Reports</span>
+                <span data-translate="nav_plagiarism">Plagiarism Reports</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('ai-detection')">
                 <i class="fas fa-robot"></i>
-                <span>AI Detection</span>
+                <span data-translate="nav_ai">AI Detection</span>
             </button>
         </div>
-        
+
         <div style="margin-top: auto; padding-top: 2rem;">
             <button class="sidebar-menu-link" onclick="logout()" style="color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+                <span data-translate="nav_logout">Logout</span>
             </button>
         </div>
     </div>
@@ -944,7 +1086,7 @@
         <!-- Top Navbar -->
         <div class="top-navbar">
             <h1 class="page-title" id="pageTitle">Dashboard</h1>
-            
+
             <div class="user-menu">
                 <div class="notification-bell" onclick="toggleNotifications()">
                     <i class="fas fa-bell"></i>
@@ -953,8 +1095,8 @@
                     <!-- Notifications Dropdown -->
                     <div class="notifications-dropdown" id="notificationsDropdown">
                         <div class="notifications-header">
-                            <h6 style="margin: 0;">Notifications</h6>
-                            <button class="btn btn-sm btn-link" onclick="markAllRead()">Mark all read</button>
+                            <h6 style="margin: 0;" data-translate="notifications">Notifications</h6>
+                            <button class="btn btn-sm btn-link" onclick="markAllRead()" data-translate="mark_all_read">Mark all read</button>
                         </div>
                         <div class="notifications-list" id="notificationsList">
                             <div style="text-align: center; padding: 1rem; color: #6c757d;">
@@ -964,7 +1106,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="user-profile">
                     <div class="user-avatar" id="userAvatar">L</div>
                     <span class="user-name" id="userName">Loading...</span>
@@ -973,7 +1115,8 @@
         </div>
 
         <!-- Mobile Menu Toggle -->
-        <button class="btn btn-primary" id="menuToggle" style="display: none; margin-bottom: 1rem;" onclick="toggleSidebar()">
+        <button class="btn btn-primary" id="menuToggle" style="display: none; margin-bottom: 1rem;"
+            onclick="toggleSidebar()">
             <i class="fas fa-bars"></i> Menu
         </button>
 
@@ -985,31 +1128,31 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-value" id="totalStudents">0</div>
-                    <div class="stat-label">Total Students</div>
+                    <div class="stat-label" data-translate="all_students">Total Students</div>
                 </div>
-                
+
                 <div class="stat-card" onclick="showSection('submissions')">
                     <div class="stat-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="stat-value" id="totalSubmissions">0</div>
-                    <div class="stat-label">Total Submissions</div>
+                    <div class="stat-label" data-translate="student_submissions">Total Submissions</div>
                 </div>
-                
+
                 <div class="stat-card" onclick="showSection('questions')">
                     <div class="stat-icon">
                         <i class="fas fa-question-circle"></i>
                     </div>
                     <div class="stat-value" id="pendingQuestions">0</div>
-                    <div class="stat-label">Pending Questions</div>
+                    <div class="stat-label" data-translate="pending_questions">Pending Questions</div>
                 </div>
-                
+
                 <div class="stat-card" onclick="showSection('feedback')">
                     <div class="stat-icon">
                         <i class="fas fa-comment"></i>
                     </div>
                     <div class="stat-value" id="pendingFeedback">0</div>
-                    <div class="stat-label">Pending Feedback</div>
+                    <div class="stat-label" data-translate="pending_feedback">Pending Feedback</div>
                 </div>
             </div>
 
@@ -1017,15 +1160,15 @@
                 <div class="table-container">
                     <h3 class="table-title">
                         <i class="fas fa-chart-bar"></i>
-                        Plagiarism Trends
+                        <span data-translate="my_trends">Plagiarism Trends</span>
                     </h3>
                     <canvas id="plagiarismChart"></canvas>
                 </div>
-                
+
                 <div class="table-container">
                     <h3 class="table-title">
                         <i class="fas fa-pie-chart"></i>
-                        Submission Status
+                        <span data-translate="submission_status">Submission Status</span>
                     </h3>
                     <canvas id="statusChart"></canvas>
                 </div>
@@ -1035,28 +1178,28 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-history"></i>
-                        Recent Plagiarism Checks
+                        <span data-translate="recent_plagiarism_checks">Recent Plagiarism Checks</span>
                     </h3>
                     <button class="btn-modern btn-primary-modern" onclick="refreshData()">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                        <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
                     </button>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Time</th>
-                            <th>Files</th>
-                            <th>Similarity</th>
-                            <th>Level</th>
-                            <th>Action</th>
+                            <th data-translate="time">Time</th>
+                            <th data-translate="files">Files</th>
+                            <th data-translate="similarity">Similarity</th>
+                            <th data-translate="level">Level</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="recentPlagiarism">
                         <tr>
                             <td colspan="5" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading...</p>
+                                <p data-translate="loading">Loading...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1067,40 +1210,41 @@
         <!-- STUDENTS SECTION -->
         <div class="content-section" id="section-students">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <div class="table-header">
                     <div>
                         <h3 class="table-title">
                             <i class="fas fa-users"></i>
-                            Registered Students
+                            <span data-translate="registered_students">Registered Students</span>
                         </h3>
-                        <p class="text-muted">Total: <span id="totalStudentsCount">0</span> students</p>
+                        <p class="text-muted"><span data-translate="total">Total</span>: <span id="totalStudentsCount">0</span> <span data-translate="students">students</span></p>
                     </div>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search students..." id="studentSearch" onkeyup="filterStudents()">
+                        <input type="text" data-translate-placeholder="search_students" placeholder="Search students..." id="studentSearch"
+                            onkeyup="filterStudents()">
                     </div>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Student</th>
-                            <th>Email</th>
-                            <th>Registered</th>
-                            <th>Last Login</th>
-                            <th>Submissions</th>
-                            <th>Status</th>
+                            <th data-translate="student">Student</th>
+                            <th data-translate="email">Email</th>
+                            <th data-translate="registered">Registered</th>
+                            <th data-translate="last_login">Last Login</th>
+                            <th data-translate="submissions">Submissions</th>
+                            <th data-translate="status">Status</th>
                         </tr>
                     </thead>
                     <tbody id="studentsList">
                         <tr>
                             <td colspan="6" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading students...</p>
+                                <p data-translate="loading_students">Loading students...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1111,33 +1255,36 @@
         <!-- UPLOAD SECTION -->
         <div class="content-section" id="section-upload">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <h3 class="table-title">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    Upload Documents
+                    <span data-translate="upload_documents">Upload Documents</span>
                 </h3>
-                
+
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <h4>Drag & Drop or Click to Upload</h4>
-                    <p class="text-muted">Supported: .txt, .pdf, .doc, .docx, .rtf</p>
-                    <button class="btn-modern btn-primary-modern" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-upload"></i> Choose Files
+                    <h4 data-translate="drag_drop">Drag & Drop or Click to Upload</h4>
+                    <p class="text-muted" data-translate="supported_formats">Supported: .txt, .pdf, .doc, .docx, .rtf</p>
+                    <button class="btn-modern btn-primary-modern"
+                        onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-upload"></i> <span data-translate="choose_files">Choose Files</span>
                     </button>
-                    <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx,.rtf" style="display: none;">
+                    <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx,.rtf"
+                        style="display: none;">
                 </div>
 
                 <div class="file-list" id="fileList" style="margin-top: 2rem;"></div>
 
                 <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button class="btn-modern btn-primary-modern" id="checkPlagiarismBtn" onclick="checkPlagiarism()" disabled style="flex: 1;">
-                        <i class="fas fa-search"></i> Check Plagiarism
+                    <button class="btn-modern btn-primary-modern" id="checkPlagiarismBtn" onclick="checkPlagiarism()"
+                        disabled style="flex: 1;">
+                        <i class="fas fa-search"></i> <span data-translate="check_plagiarism">Check Plagiarism</span>
                     </button>
                     <button class="btn-modern btn-outline-modern" onclick="clearAll()">
-                        <i class="fas fa-trash-alt"></i> Clear
+                        <i class="fas fa-trash-alt"></i> <span data-translate="clear_all">Clear</span>
                     </button>
                 </div>
             </div>
@@ -1146,37 +1293,37 @@
         <!-- SUBMISSIONS SECTION -->
         <div class="content-section" id="section-submissions">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-file-upload"></i>
-                        Student Submissions
+                        <span data-translate="student_submissions">Student Submissions</span>
                     </h3>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search..." id="submissionsSearch" onkeyup="filterSubmissions()">
+                        <input type="text" data-translate-placeholder="search" placeholder="Search..." id="submissionsSearch" onkeyup="filterSubmissions()">
                     </div>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Student</th>
-                            <th>Title</th>
-                            <th>Submitted</th>
-                            <th>Files</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-translate="student">Student</th>
+                            <th data-translate="title">Title</th>
+                            <th data-translate="submitted">Submitted</th>
+                            <th data-translate="files">Files</th>
+                            <th data-translate="status">Status</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="submissionsList">
                         <tr>
                             <td colspan="6" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading submissions...</p>
+                                <p data-translate="loading_submissions">Loading submissions...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1187,32 +1334,32 @@
         <!-- QUESTIONS SECTION -->
         <div class="content-section" id="section-questions">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-question-circle"></i>
-                        Student Questions
+                        <span data-translate="student_questions">Student Questions</span>
                     </h3>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Student</th>
-                            <th>Question</th>
-                            <th>Asked</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-translate="student">Student</th>
+                            <th data-translate="your_question">Question</th>
+                            <th data-translate="asked">Asked</th>
+                            <th data-translate="status">Status</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="questionsList">
                         <tr>
                             <td colspan="5" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading questions...</p>
+                                <p data-translate="loading_questions">Loading questions...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1223,33 +1370,33 @@
         <!-- FEEDBACK SECTION -->
         <div class="content-section" id="section-feedback">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-comments"></i>
-                        Student Feedback
+                        <span data-translate="student_feedback">Student Feedback</span>
                     </h3>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Student</th>
-                            <th>Subject</th>
-                            <th>Message</th>
-                            <th>Received</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-translate="student">Student</th>
+                            <th data-translate="subject">Subject</th>
+                            <th data-translate="student_message">Message</th>
+                            <th data-translate="received">Received</th>
+                            <th data-translate="status">Status</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="feedbackList">
                         <tr>
                             <td colspan="6" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading feedback...</p>
+                                <p data-translate="loading_feedback">Loading feedback...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1260,33 +1407,33 @@
         <!-- PLAGIARISM REPORTS SECTION -->
         <div class="content-section" id="section-plagiarism">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-chart-line"></i>
-                        Plagiarism Reports
+                        <span data-translate="nav_plagiarism">Plagiarism Reports</span>
                     </h3>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>File 1</th>
-                            <th>File 2</th>
-                            <th>Similarity</th>
-                            <th>Level</th>
-                            <th>Action</th>
+                            <th data-translate="date">Date</th>
+                            <th data-translate="file_1">File 1</th>
+                            <th data-translate="file_2">File 2</th>
+                            <th data-translate="similarity">Similarity</th>
+                            <th data-translate="level">Level</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="plagiarismReportsList">
                         <tr>
                             <td colspan="6" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading reports...</p>
+                                <p data-translate="loading_reports">Loading reports...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1297,32 +1444,32 @@
         <!-- AI DETECTION SECTION -->
         <div class="content-section" id="section-ai-detection">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
-            
+
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-robot"></i>
-                        AI Detection Results
+                        <span data-translate="ai_detection">AI Detection Results</span>
                     </h3>
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>File</th>
-                            <th>Session</th>
-                            <th>AI Score</th>
-                            <th>Result</th>
-                            <th>Action</th>
+                            <th data-translate="file">File</th>
+                            <th data-translate="session">Session</th>
+                            <th data-translate="ai_score">AI Score</th>
+                            <th data-translate="result">Result</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="aiDetectionList">
                         <tr>
                             <td colspan="5" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading AI data...</p>
+                                <p data-translate="loading_ai_data">Loading AI data...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1333,7 +1480,9 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <!-- Translations -->
+    <script src="translations.js"></script>
+
     <script>
         const API_URL = 'http://127.0.0.1:5000/api';
         let currentUser = null;
@@ -1342,6 +1491,48 @@
         let currentFeedbackId = null;
         let plagiarismChart = null;
         let statusChart = null;
+        let allFeedback = [];
+
+        // Initialize translations
+        document.addEventListener('DOMContentLoaded', function() {
+            Translations.updatePageLanguage();
+            
+            // Listen for language changes
+            document.addEventListener('languageChanged', function(e) {
+                // Update dynamic content if needed
+                updateDynamicContent();
+            });
+        });
+
+        // Update dynamic content when language changes
+        function updateDynamicContent() {
+            // Reload data that contains translated text
+            if (document.getElementById('section-dashboard').classList.contains('active')) {
+                loadRecentPlagiarism();
+                loadStudentsList();
+            }
+            if (document.getElementById('section-students').classList.contains('active')) {
+                loadStudentsList();
+            }
+            if (document.getElementById('section-upload').classList.contains('active')) {
+                // No dynamic content to reload
+            }
+            if (document.getElementById('section-submissions').classList.contains('active')) {
+                loadSubmissions();
+            }
+            if (document.getElementById('section-questions').classList.contains('active')) {
+                loadQuestions();
+            }
+            if (document.getElementById('section-feedback').classList.contains('active')) {
+                loadFeedback();
+            }
+            if (document.getElementById('section-plagiarism').classList.contains('active')) {
+                loadPlagiarismReports();
+            }
+            if (document.getElementById('section-ai-results').classList.contains('active')) {
+                loadAIDetection();
+            }
+        }
 
         // ==================================================
         // MODAL FUNCTIONS (代替 alert)
@@ -1349,7 +1540,7 @@
         function showModal(title, message, type = 'info') {
             document.getElementById('infoModalTitle').textContent = title;
             document.getElementById('infoModalMessage').textContent = message;
-            
+
             const modal = new bootstrap.Modal(document.getElementById('infoModal'));
             modal.show();
         }
@@ -1358,7 +1549,7 @@
             document.getElementById('confirmModalTitle').textContent = title;
             document.getElementById('confirmModalMessage').textContent = message;
             window.confirmCallback = onConfirm;
-            
+
             const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
             modal.show();
         }
@@ -1379,7 +1570,7 @@
                 <span>${message}</span>
             `;
             document.body.appendChild(toast);
-            
+
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
@@ -1394,24 +1585,24 @@
                 link.classList.remove('active');
             });
             document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
-            
+
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(`section-${sectionId}`).classList.add('active');
-            
+
             const titles = {
-                'dashboard': 'Dashboard',
-                'students': 'Students',
-                'upload': 'Upload & Check',
-                'submissions': 'Submissions',
-                'questions': 'Questions',
-                'feedback': 'Feedback',
-                'plagiarism': 'Plagiarism Reports',
-                'ai-detection': 'AI Detection'
+                'dashboard': Translations.t('nav_dashboard'),
+                'students': Translations.t('nav_students'),
+                'upload': Translations.t('nav_upload'),
+                'submissions': Translations.t('student_submissions'),
+                'questions': Translations.t('my_questions'),
+                'feedback': Translations.t('manage_feedback'),
+                'plagiarism': Translations.t('plagiarism_report'),
+                'ai-detection': Translations.t('ai_detection')
             };
             document.getElementById('pageTitle').textContent = titles[sectionId];
-            
+
             // Load data when section is shown
             if (sectionId === 'students') loadStudentsList();
             if (sectionId === 'submissions') loadSubmissions();
@@ -1428,31 +1619,31 @@
         // ==================================================
         // AUTHENTICATION
         // ==================================================
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             checkAuthStatus();
             setupEventListeners();
         });
 
         function checkAuthStatus() {
             fetch(`${API_URL}/current-user`, { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && data.user) {
-                    currentUser = data.user;
-                    if (currentUser.role !== 'lecturer') {
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user) {
+                        currentUser = data.user;
+                        if (currentUser.role !== 'lecturer') {
+                            window.location.href = '/index.html';
+                            return;
+                        }
+                        updateUserInfo();
+                        loadDashboardData();
+                        startNotificationPolling();
+                    } else {
                         window.location.href = '/index.html';
-                        return;
                     }
-                    updateUserInfo();
-                    loadDashboardData();
-                    startNotificationPolling();
-                } else {
+                })
+                .catch(() => {
                     window.location.href = '/index.html';
-                }
-            })
-            .catch(() => {
-                window.location.href = '/index.html';
-            });
+                });
         }
 
         function updateUserInfo() {
@@ -1533,9 +1724,9 @@
             plagiarismChart = new Chart(ctx1, {
                 type: 'line',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: [Translations.t('mon'), Translations.t('tue'), Translations.t('wed'), Translations.t('thu'), Translations.t('fri'), Translations.t('sat'), Translations.t('sun')],
                     datasets: [{
-                        label: 'Plagiarism Detections',
+                        label: Translations.t('plagiarism_detections'),
                         data: [12, 19, 15, 17, 14, 13, 15],
                         borderColor: '#4361ee',
                         backgroundColor: 'rgba(67, 97, 238, 0.1)',
@@ -1553,7 +1744,7 @@
             statusChart = new Chart(ctx2, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pending', 'Answered', 'Resolved'],
+                    labels: [Translations.t('pending'), Translations.t('answered'), Translations.t('resolved')],
                     datasets: [{
                         data: [5, 8, 12],
                         backgroundColor: ['#f8961e', '#4cc9f0', '#4361ee'],
@@ -1570,40 +1761,41 @@
 
         function loadRecentPlagiarism() {
             fetch(`${API_URL}/history?page=0`, { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && data.history) {
-                    const recent = data.history.slice(0, 5);
-                    let html = '';
-                    
-                    Promise.all(recent.map(session => 
-                        fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
-                        .then(res => res.json())
-                    )).then(sessionsData => {
-                        sessionsData.forEach((sessionData, idx) => {
-                            if (sessionData.success && sessionData.results) {
-                                sessionData.results.forEach(result => {
-                                    html += `
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.history) {
+                        const recent = data.history.slice(0, 5);
+                        let html = '';
+
+                        Promise.all(recent.map(session =>
+                            fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
+                                .then(res => res.json())
+                        )).then(sessionsData => {
+                            sessionsData.forEach((sessionData, idx) => {
+                                if (sessionData.success && sessionData.results) {
+                                    sessionData.results.forEach(result => {
+                                        const similarityValue = result.similarity ?? result.basic_similarity ?? 0;
+                                        html += `
                                         <tr onclick="viewPlagiarismDetails(${recent[idx].id}, '${result.file1}', '${result.file2}')">
                                             <td>${new Date(recent[idx].upload_time).toLocaleString()}</td>
                                             <td>${result.file1} vs ${result.file2}</td>
-                                            // <td><strong>${result.word_overlap}%</strong></td>
+                                            <td><strong>${similarityValue}%</strong></td>
                                             <td><span class="similarity-badge ${result.plagiarism_level}">${result.plagiarism_level}</span></td>
                                             <td>
                                                 <button class="btn-modern btn-primary-modern btn-sm" onclick="event.stopPropagation(); viewPlagiarismDetails(${recent[idx].id}, '${result.file1}', '${result.file2}')">
-                                                    <i class="fas fa-eye"></i> View
+                                                    <i class="fas fa-eye"></i> ${Translations.t('view')}
                                                 </button>
                                             </td>
                                         </tr>
                                     `;
-                                });
-                            }
+                                    });
+                                }
+                            });
+
+                            document.getElementById('recentPlagiarism').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">' + Translations.t('no_recent_checks') + '</td></tr>';
                         });
-                        
-                        document.getElementById('recentPlagiarism').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">No recent checks</td></tr>';
-                    });
-                }
-            });
+                    }
+                });
         }
 
         // ==================================================
@@ -1613,26 +1805,26 @@
             try {
                 const response = await fetch(`${API_URL}/users/students`, { credentials: 'include' });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     document.getElementById('totalStudentsCount').textContent = data.total;
-                    
+
                     const submissionsRes = await fetch(`${API_URL}/submissions`, { credentials: 'include' });
                     const submissionsData = await submissionsRes.json();
-                    
+
                     const submissionCounts = {};
                     if (submissionsData.success) {
                         submissionsData.submissions.forEach(sub => {
                             submissionCounts[sub.user_id] = (submissionCounts[sub.user_id] || 0) + 1;
                         });
                     }
-                    
+
                     let html = '';
                     data.students.forEach(student => {
                         const subCount = submissionCounts[student.id] || 0;
                         const lastLogin = student.last_login ? new Date(student.last_login).toLocaleDateString() : 'Never';
                         const registered = new Date(student.created_at).toLocaleDateString();
-                        
+
                         html += `
                             <tr>
                                 <td>
@@ -1647,20 +1839,20 @@
                                 <td>${registered}</td>
                                 <td>${lastLogin}</td>
                                 <td><span class="badge-count" style="background: ${subCount > 0 ? '#4cc9f0' : '#6c757d'};">${subCount}</span></td>
-                                <td>
+                        <td>
                                     <span class="status-badge ${subCount > 0 ? 'status-answered' : 'status-pending'}">
-                                        ${subCount > 0 ? 'Active' : 'Inactive'}
+                                        ${subCount > 0 ? Translations.t('active') : Translations.t('inactive')}
                                     </span>
                                 </td>
                             </tr>
                         `;
                     });
-                    
+
                     document.getElementById('studentsList').innerHTML = html;
                 }
             } catch (error) {
                 console.error('Error loading students:', error);
-                document.getElementById('studentsList').innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger);">Error loading students</td></tr>';
+                document.getElementById('studentsList').innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger);">' + Translations.t('error_loading_students') + '</td></tr>';
             }
         }
 
@@ -1681,7 +1873,7 @@
             const fileInput = document.getElementById('fileInput');
 
             if (uploadArea) {
-                uploadArea.addEventListener('click', function(e) {
+                uploadArea.addEventListener('click', function (e) {
                     if (e.target.tagName === 'BUTTON') return;
                     fileInput.click();
                 });
@@ -1707,17 +1899,17 @@
             }
 
             if (fileInput) {
-                fileInput.addEventListener('change', function(e) {
+                fileInput.addEventListener('change', function (e) {
                     handleFiles(Array.from(e.target.files));
                     this.value = '';
                 });
             }
 
             // Close notifications when clicking outside
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 const dropdown = document.getElementById('notificationsDropdown');
                 const bell = document.querySelector('.notification-bell');
-                
+
                 if (dropdown && bell && !bell.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.classList.remove('show');
                 }
@@ -1729,13 +1921,13 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 return ['txt', 'pdf', 'doc', 'docx', 'rtf'].includes(ext);
             });
-            
+
             validFiles.forEach(file => {
                 if (!uploadedFiles.some(f => f.name === file.name)) {
                     uploadedFiles.push(file);
                 }
             });
-            
+
             updateFileList();
             document.getElementById('checkPlagiarismBtn').disabled = uploadedFiles.length < 2;
         }
@@ -1746,8 +1938,8 @@
                 fileList.innerHTML = '';
                 return;
             }
-            
-            let html = '<h5>Selected Files:</h5>';
+
+            let html = '<h5>' + Translations.t('selected_files') + '</h5>';
             uploadedFiles.forEach((file, index) => {
                 html += `
                     <div class="file-item">
@@ -1760,7 +1952,7 @@
             });
             fileList.innerHTML = html;
         }
-//test
+        //test
         function removeFile(index) {
             uploadedFiles.splice(index, 1);
             updateFileList();
@@ -1771,40 +1963,40 @@
             uploadedFiles = [];
             document.getElementById('fileList').innerHTML = '';
             document.getElementById('checkPlagiarismBtn').disabled = true;
-            showToast('All files cleared', 'success');
+            showToast(Translations.t('all_files_cleared'), 'success');
         }
 
         async function checkPlagiarism() {
             if (uploadedFiles.length < 2) {
-                showModal('Error', 'Please upload at least 2 files', 'error');
+                showModal('Error', Translations.t('upload_at_least_2_files'), 'error');
                 return;
             }
-            
+
             // showModal('Processing', 'Starting plagiarism check...', 'info');
-            
+
             const formData = new FormData();
             uploadedFiles.forEach(file => {
                 formData.append('files', file);
             });
-            
+
             try {
                 const response = await fetch(`${API_URL}/armenian-check`, {
                     method: 'POST',
                     body: formData,
                     credentials: 'include'
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
-                    showToast('Plagiarism check complete!', 'success');
+                    showToast(Translations.t('plagiarism_check_complete'), 'success');
                     showSection('plagiarism');
                     loadPlagiarismReports();
                 } else {
-                    showModal('Error', data.error || 'Check failed', 'error');
+                    showModal('Error', data.error || Translations.t('check_failed'), 'error');
                 }
             } catch (error) {
-                showModal('Error', 'Connection error: ' + error.message, 'error');
+                showModal('Error', Translations.t('connection_error') + ': ' + error.message, 'error');
             }
         }
 
@@ -1815,7 +2007,7 @@
             try {
                 const response = await fetch(`${API_URL}/submissions`, { credentials: 'include' });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     let html = '';
                     data.submissions.forEach(sub => {
@@ -1825,16 +2017,16 @@
                                 <td>${escapeHtml(sub.title || 'Untitled')}</td>
                                 <td>${new Date(sub.submitted_at).toLocaleString()}</td>
                                 <td>2 files</td>
-                                <td><span class="status-badge status-pending">New</span></td>
+                                <td><span class="status-badge status-pending">${Translations.t('new_status')}</span></td>
                                 <td>
                                     <button class="btn-modern btn-primary-modern btn-sm" onclick="event.stopPropagation(); viewSubmission(${sub.session_id})">
-                                        <i class="fas fa-eye"></i> View
+                                        <i class="fas fa-eye"></i> ${Translations.t('view')}
                                     </button>
                                 </td>
                             </tr>
                         `;
                     });
-                    document.getElementById('submissionsList').innerHTML = html || '<tr><td colspan="6" style="text-align: center;">No submissions</td></tr>';
+                    document.getElementById('submissionsList').innerHTML = html || '<tr><td colspan="6" style="text-align: center;">' + Translations.t('no_submissions') + '</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading submissions:', error);
@@ -1852,7 +2044,7 @@
             try {
                 const response = await fetch(`${API_URL}/questions`, { credentials: 'include' });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     let html = '';
                     data.questions.forEach(q => {
@@ -1863,14 +2055,14 @@
                                 <td>${new Date(q.created_at).toLocaleDateString()}</td>
                                 <td><span class="status-badge status-${q.status}">${q.status}</span></td>
                                 <td>
-                                    ${q.status === 'pending' ? 
-                                        '<button class="btn-modern btn-primary-modern btn-sm" onclick="openAnswerModal(' + q.id + ', \'' + escapeHtml(q.full_name) + '\', \'' + escapeHtml(q.title) + '\', \'' + escapeHtml(q.question) + '\')"><i class="fas fa-reply"></i> Answer</button>' : 
-                                        '<button class="btn-modern btn-outline-modern btn-sm" onclick="viewAnswer(\'' + escapeHtml(q.answer) + '\')"><i class="fas fa-eye"></i> View</button>'}
+                                    ${q.status === 'pending' ?
+                                '<button class="btn-modern btn-primary-modern btn-sm" onclick="openAnswerModal(' + q.id + ', \'' + escapeHtml(q.full_name) + '\', \'' + escapeHtml(q.title) + '\', \'' + escapeHtml(q.question) + '\')"><i class="fas fa-reply"></i> ' + Translations.t('answer_button') + '</button>' :
+                                '<button class="btn-modern btn-outline-modern btn-sm" onclick="viewAnswer(\'' + escapeHtml(q.answer) + '\')"><i class="fas fa-eye"></i> ' + Translations.t('view') + '</button>'}
                                 </td>
                             </tr>
                         `;
                     });
-                    document.getElementById('questionsList').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">No questions</td></tr>';
+                    document.getElementById('questionsList').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">' + Translations.t('no_questions') + '</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading questions:', error);
@@ -1883,17 +2075,17 @@
             document.getElementById('questionTitle').textContent = title;
             document.getElementById('questionText').textContent = question;
             document.getElementById('answerText').value = '';
-            
+
             new bootstrap.Modal(document.getElementById('answerModal')).show();
         }
 
         async function submitAnswer() {
             const answer = document.getElementById('answerText').value.trim();
             if (!answer) {
-                showModal('Error', 'Please enter an answer', 'error');
+                showModal('Error', Translations.t('enter_answer'), 'error');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`${API_URL}/questions/${currentQuestionId}/answer`, {
                     method: 'POST',
@@ -1901,52 +2093,97 @@
                     body: JSON.stringify({ answer }),
                     credentials: 'include'
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     bootstrap.Modal.getInstance(document.getElementById('answerModal')).hide();
-                    showToast('Answer submitted!', 'success');
+                    showToast(Translations.t('answer_submitted'), 'success');
                     loadQuestions();
                 } else {
-                    showModal('Error', data.error || 'Failed to submit answer', 'error');
+                    showModal('Error', data.error || Translations.t('failed_submit_answer'), 'error');
                 }
             } catch (error) {
-                showModal('Error', 'Connection error', 'error');
+                showModal('Error', Translations.t('connection_error'), 'error');
             }
         }
 
         // ==================================================
         // FEEDBACK SECTION
         // ==================================================
+        // Store all feedback globally so we can show details without extra API calls
+
         async function loadFeedback() {
             try {
                 const response = await fetch(`${API_URL}/feedback/enhanced`, { credentials: 'include' });
                 const data = await response.json();
-                
+
                 if (data.success) {
+                    allFeedback = data.feedback;   // store for later use
+
                     let html = '';
                     data.feedback.forEach(f => {
+                        const statusClass = f.status === 'answered' ? 'status-answered' : 'status-pending';
+                        const statusText = f.status === 'answered' ? Translations.t('answered') : Translations.t('pending');
+
                         html += `
-                            <tr>
-                                <td>${escapeHtml(f.full_name)}</td>
-                                <td>${escapeHtml(f.subject)}</td>
-                                <td>${escapeHtml(f.message.substring(0, 50))}...</td>
-                                <td>${new Date(f.created_at).toLocaleDateString()}</td>
-                                <td><span class="status-badge status-${f.status}">${f.status}</span></td>
-                                <td>
-                                    ${f.status === 'pending' ? 
-                                        '<button class="btn-modern btn-primary-modern btn-sm" onclick="openReplyModal(' + f.id + ', \'' + escapeHtml(f.full_name) + '\', \'' + escapeHtml(f.subject) + '\', \'' + escapeHtml(f.message) + '\')"><i class="fas fa-reply"></i> Reply</button>' : 
-                                        '<button class="btn-modern btn-outline-modern btn-sm" onclick="viewReply(\'' + escapeHtml(f.reply) + '\')"><i class="fas fa-eye"></i> View</button>'}
-                                </td>
-                            </tr>
-                        `;
+                    <tr>
+                        <td>${escapeHtml(f.full_name)}</td>
+                        <td>${escapeHtml(f.subject)}</td>
+                        <td>${escapeHtml(f.message.substring(0, 50))}...</td>
+                        <td>${new Date(f.created_at).toLocaleDateString()}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-modern btn-primary-modern btn-sm me-1" onclick="viewFeedbackDetails(${f.id})">
+                                <i class="fas fa-eye"></i> ${Translations.t('view')}
+                            </button>
+                            ${f.status === 'pending' ?
+                                `<button class="btn-modern btn-outline-modern btn-sm" onclick="openReplyModal(${f.id}, '${escapeHtml(f.full_name)}', '${escapeHtml(f.subject)}', '${escapeHtml(f.message)}')">
+                                    <i class="fas fa-reply"></i> ${Translations.t('answer_feedback')}
+                                </button>` :
+                                ''}
+                         </td>
+                    </tr>
+                `;
                     });
-                    document.getElementById('feedbackList').innerHTML = html || '<tr><td colspan="6" style="text-align: center;">No feedback</td></tr>';
+                    document.getElementById('feedbackList').innerHTML = html || `<tr><td colspan="6" style="text-align: center;">${Translations.t('no_feedback')}</td></tr>`;
+
+                    // Update sidebar badge (pending count)
+                    const pendingCount = data.feedback.filter(f => f.status === 'pending').length;
+                    document.getElementById('sidebarFeedbackCount').textContent = pendingCount > 0 ? pendingCount : '';
+                    document.getElementById('sidebarFeedbackCount').classList.toggle('show', pendingCount > 0);
                 }
             } catch (error) {
                 console.error('Error loading feedback:', error);
+                document.getElementById('feedbackList').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger);">${Translations.t('error_loading')}</td></tr>`;
             }
+        }
+
+        function viewFeedbackDetails(feedbackId) {
+            const fb = allFeedback.find(f => f.id === feedbackId);
+            if (!fb) {
+                showToast(Translations.t('feedback_not_found'), 'error');
+                return;
+            }
+
+            document.getElementById('viewFeedbackStudent').textContent = fb.full_name;
+            document.getElementById('viewFeedbackSubject').textContent = fb.subject;
+            document.getElementById('viewFeedbackMessage').textContent = fb.message;
+            document.getElementById('viewFeedbackDate').textContent = new Date(fb.created_at).toLocaleString();
+
+            const statusSpan = document.getElementById('viewFeedbackStatus');
+            statusSpan.textContent = fb.status === 'answered' ? Translations.t('answered_status') : Translations.t('pending_status');
+            statusSpan.className = `badge ${fb.status === 'answered' ? 'bg-success' : 'bg-warning'}`;
+
+            const replyContainer = document.getElementById('viewReplyContainer');
+            if (fb.status === 'answered' && fb.reply) {
+                document.getElementById('viewFeedbackReply').textContent = fb.reply;
+                replyContainer.style.display = 'block';
+            } else {
+                replyContainer.style.display = 'none';
+            }
+
+            new bootstrap.Modal(document.getElementById('viewFeedbackModal')).show();
         }
 
         function openReplyModal(id, studentName, subject, message) {
@@ -1955,17 +2192,17 @@
             document.getElementById('feedbackSubject').textContent = subject;
             document.getElementById('feedbackMessage').textContent = message;
             document.getElementById('replyText').value = '';
-            
+
             new bootstrap.Modal(document.getElementById('replyModal')).show();
         }
 
         async function submitReply() {
             const reply = document.getElementById('replyText').value.trim();
             if (!reply) {
-                showModal('Error', 'Please enter a reply', 'error');
+                showModal('Error', Translations.t('enter_reply'), 'error');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`${API_URL}/feedback/enhanced/${currentFeedbackId}/reply`, {
                     method: 'POST',
@@ -1973,18 +2210,18 @@
                     body: JSON.stringify({ reply }),
                     credentials: 'include'
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     bootstrap.Modal.getInstance(document.getElementById('replyModal')).hide();
-                    showToast('Reply sent!', 'success');
+                    showToast(Translations.t('reply_sent'), 'success');
                     loadFeedback();
                 } else {
-                    showModal('Error', data.error || 'Failed to send reply', 'error');
+                    showModal('Error', data.error || Translations.t('failed_send_reply'), 'error');
                 }
             } catch (error) {
-                showModal('Error', 'Connection error', 'error');
+                showModal('Error', Translations.t('connection_error'), 'error');
             }
         }
 
@@ -1993,19 +2230,19 @@
         // ==================================================
         function loadPlagiarismReports() {
             fetch(`${API_URL}/history?page=0`, { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && data.history) {
-                    let html = '';
-                    
-                    Promise.all(data.history.map(session => 
-                        fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
-                        .then(res => res.json())
-                    )).then(sessionsData => {
-                        sessionsData.forEach((sessionData, idx) => {
-                            if (sessionData.success && sessionData.results) {
-                                sessionData.results.forEach(result => {
-                                    html += `
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.history) {
+                        let html = '';
+
+                        Promise.all(data.history.map(session =>
+                            fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
+                                .then(res => res.json())
+                        )).then(sessionsData => {
+                            sessionsData.forEach((sessionData, idx) => {
+                                if (sessionData.success && sessionData.results) {
+                                    sessionData.results.forEach(result => {
+                                        html += `
                                         <tr onclick="viewPlagiarismDetails(${data.history[idx].id}, '${result.file1}', '${result.file2}')">
                                             <td>${new Date(data.history[idx].upload_time).toLocaleString()}</td>
                                             <td>${result.file1}</td>
@@ -2014,19 +2251,19 @@
                                             <td><span class="similarity-badge ${result.plagiarism_level}">${result.plagiarism_level}</span></td>
                                             <td>
                                                 <button class="btn-modern btn-primary-modern btn-sm" onclick="event.stopPropagation(); viewPlagiarismDetails(${data.history[idx].id}, '${result.file1}', '${result.file2}')">
-                                                    <i class="fas fa-eye"></i> View
+                                                    <i class="fas fa-eye"></i> ${Translations.t('view')}
                                                 </button>
                                             </td>
                                         </tr>
                                     `;
-                                });
-                            }
+                                    });
+                                }
+                            });
+
+                            document.getElementById('plagiarismReportsList').innerHTML = html || '<tr><td colspan="6" style="text-align: center;">' + Translations.t('no_reports') + '</td></tr>';
                         });
-                        
-                        document.getElementById('plagiarismReportsList').innerHTML = html || '<tr><td colspan="6" style="text-align: center;">No reports</td></tr>';
-                    });
-                }
-            });
+                    }
+                });
         }
 
         function viewPlagiarismDetails(sessionId, file1, file2) {
@@ -2038,20 +2275,20 @@
         // ==================================================
         function loadAIDetection() {
             fetch(`${API_URL}/history?page=0`, { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && data.history) {
-                    let html = '';
-                    
-                    Promise.all(data.history.map(session => 
-                        fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
-                        .then(res => res.json())
-                    )).then(sessionsData => {
-                        sessionsData.forEach((sessionData, idx) => {
-                            if (sessionData.success && sessionData.files) {
-                                sessionData.files.forEach(file => {
-                                    const aiScore = file.ai_score || 0;
-                                    html += `
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.history) {
+                        let html = '';
+
+                        Promise.all(data.history.map(session =>
+                            fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
+                                .then(res => res.json())
+                        )).then(sessionsData => {
+                            sessionsData.forEach((sessionData, idx) => {
+                                if (sessionData.success && sessionData.files) {
+                                    sessionData.files.forEach(file => {
+                                        const aiScore = file.ai_score || 0;
+                                        html += `
                                         <tr>
                                             <td>${escapeHtml(file.filename)}</td>
                                             <td>${data.history[idx].id}</td>
@@ -2064,24 +2301,24 @@
                                             </td>
                                             <td>
                                                 <span class="status-badge ${aiScore > 50 ? 'status-pending' : 'status-answered'}">
-                                                    ${aiScore > 50 ? '⚠️ AI Generated' : '✅ Human Written'}
+                                                    ${aiScore > 50 ? Translations.t('ai_generated') : Translations.t('human_written')}
                                                 </span>
                                             </td>
                                             <td>
                                                 <button class="btn-modern btn-outline-modern btn-sm" onclick="showModal('AI Analysis', 'AI Score: ${aiScore}%\\nWords: ${file.word_count || 0}\\n\\nThis document appears to be ${aiScore > 50 ? 'AI-generated' : 'human-written'}.')">
-                                                    <i class="fas fa-info-circle"></i> Details
+                                                    <i class="fas fa-info-circle"></i> ${Translations.t('details')}
                                                 </button>
                                             </td>
                                         </tr>
                                     `;
-                                });
-                            }
+                                    });
+                                }
+                            });
+
+                            document.getElementById('aiDetectionList').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">' + Translations.t('no_ai_data') + '</td></tr>';
                         });
-                        
-                        document.getElementById('aiDetectionList').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">No AI data</td></tr>';
-                    });
-                }
-            });
+                    }
+                });
         }
 
         // ==================================================
@@ -2089,15 +2326,15 @@
         // ==================================================
         function loadNotifications() {
             fetch(`${API_URL}/notifications`, { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('notificationBadge').textContent = data.unread_count;
-                    
-                    // Update dropdown
-                    updateNotificationsDropdown(data.notifications);
-                }
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('notificationBadge').textContent = data.unread_count;
+
+                        // Update dropdown
+                        updateNotificationsDropdown(data.notifications);
+                    }
+                });
         }
 
         function startNotificationPolling() {
@@ -2112,17 +2349,17 @@
 
         function updateNotificationsDropdown(notifications) {
             const list = document.getElementById('notificationsList');
-            
+
             if (!notifications || notifications.length === 0) {
                 list.innerHTML = `
                     <div style="text-align: center; padding: 1rem; color: #6c757d;">
                         <i class="fas fa-bell-slash"></i>
-                        <p>No notifications</p>
+                        <p data-translate="no_notifications">${Translations.t('no_notifications')}</p>
                     </div>
                 `;
                 return;
             }
-            
+
             let html = '';
             notifications.forEach(notification => {
                 const isRead = notification.is_read ? 'read' : '';
@@ -2140,7 +2377,7 @@
                     </div>
                 `;
             });
-            
+
             list.innerHTML = html;
         }
 
@@ -2160,26 +2397,26 @@
                 method: 'POST',
                 credentials: 'include'
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Update UI
-                    document.getElementById('notificationBadge').textContent = '0';
-                    document.getElementById('notificationsList').innerHTML = `
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update UI
+                        document.getElementById('notificationBadge').textContent = '0';
+                        document.getElementById('notificationsList').innerHTML = `
                         <div style="text-align: center; padding: 1rem; color: #6c757d;">
                             <i class="fas fa-bell-slash"></i>
-                            <p>No new notifications</p>
+                            <p data-translate="no_new_notifications">${Translations.t('no_new_notifications')}</p>
                         </div>
                     `;
-                    showToast('All notifications marked as read', 'success');
-                } else {
-                    showToast('Failed to mark notifications as read', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Failed to mark notifications as read', 'error');
-            });
+                        showToast(Translations.t('all_notifications_read'), 'success');
+                    } else {
+                        showToast(Translations.t('failed_mark_notifications'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast(Translations.t('failed_mark_notifications'), 'error');
+                });
         }
 
         function notificationClick(id, link) {
@@ -2188,12 +2425,12 @@
                 method: 'POST',
                 credentials: 'include'
             });
-            
+
             // Navigate to link
             if (link) {
                 window.location.href = link;
             }
-            
+
             // Hide dropdown
             document.getElementById('notificationsDropdown').classList.remove('show');
         }
@@ -2203,7 +2440,7 @@
         // ==================================================
         function refreshData() {
             loadDashboardData();
-            showToast('Data refreshed', 'success');
+            showToast(Translations.t('data_refreshed'), 'success');
         }
 
         function filterSubmissions() {
@@ -2211,11 +2448,11 @@
         }
 
         function viewAnswer(answer) {
-            showModal('Answer', answer);
+            showModal(Translations.t('answer_modal'), answer);
         }
 
         function viewReply(reply) {
-            showModal('Reply', reply);
+            showModal(Translations.t('reply_modal'), reply);
         }
 
         function escapeHtml(text) {
@@ -2225,11 +2462,11 @@
         }
 
         function logout() {
-            showConfirm('Logout', 'Are you sure you want to logout?', () => {
+            showConfirm(Translations.t('logout'), Translations.t('logout_confirm'), () => {
                 fetch(`${API_URL}/logout`, { method: 'POST', credentials: 'include' })
-                .then(() => {
-                    window.location.href = '/index.html';
-                });
+                    .then(() => {
+                        window.location.href = '/index.html';
+                    });
             });
         }
 
@@ -2241,65 +2478,65 @@
 
 
 
-// ==================================================
-// AI DETECTION DETAILS FUNCTIONS
-// ==================================================
+        // ==================================================
+        // AI DETECTION DETAILS FUNCTIONS
+        // ==================================================
 
-let currentAISession = null;
-let currentAIFilename = null;
+        let currentAISession = null;
+        let currentAIFilename = null;
 
-async function viewAIDetails(sessionId, filename) {
-    currentAISession = sessionId;
-    currentAIFilename = filename;
-    
-    // Show loading
-    document.getElementById('aiDetailsLoading').style.display = 'block';
-    document.getElementById('aiDetailsContent').style.display = 'none';
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('aiDetailsModal'));
-    modal.show();
-    
-    try {
-        const response = await fetch(`${API_URL}/ai-details/${sessionId}/${encodeURIComponent(filename)}`, {
-            credentials: 'include'
-        });
-        const data = await response.json();
-        
-        if (data.success) {
-            displayAIDetails(data);
-        } else {
-            showToast('Error loading AI details', 'error');
+        async function viewAIDetails(sessionId, filename) {
+            currentAISession = sessionId;
+            currentAIFilename = filename;
+
+            // Show loading
+            document.getElementById('aiDetailsLoading').style.display = 'block';
+            document.getElementById('aiDetailsContent').style.display = 'none';
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('aiDetailsModal'));
+            modal.show();
+
+            try {
+                const response = await fetch(`${API_URL}/ai-details/${sessionId}/${encodeURIComponent(filename)}`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    displayAIDetails(data);
+                } else {
+                    showToast(Translations.t('error_loading_ai_details'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(Translations.t('failed_load_ai_details'), 'error');
+            } finally {
+                document.getElementById('aiDetailsLoading').style.display = 'none';
+                document.getElementById('aiDetailsContent').style.display = 'block';
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        showToast('Failed to load AI details', 'error');
-    } finally {
-        document.getElementById('aiDetailsLoading').style.display = 'none';
-        document.getElementById('aiDetailsContent').style.display = 'block';
-    }
-}
 
-function displayAIDetails(data) {
-    const ai = data.ai_analysis;
-    
-    // Update summary stats
-    document.getElementById('aiOverallScore').textContent = ai.ai_percentage + '%';
-    
-    const sentenceCount = ai.sentence_count || ai.sentences?.length || 0;
-    document.getElementById('aiSentenceCount').textContent = sentenceCount;
-    
-    const flaggedCount = ai.sentences?.filter(s => s.is_ai).length || 0;
-    document.getElementById('aiFlaggedCount').textContent = flaggedCount;
-    
-    // Display features
-    const features = ai.features || {};
-    const featuresHtml = `
+        function displayAIDetails(data) {
+            const ai = data.ai_analysis;
+
+            // Update summary stats
+            document.getElementById('aiOverallScore').textContent = ai.ai_percentage + '%';
+
+            const sentenceCount = ai.sentence_count || ai.sentences?.length || 0;
+            document.getElementById('aiSentenceCount').textContent = sentenceCount;
+
+            const flaggedCount = ai.sentences?.filter(s => s.is_ai).length || 0;
+            document.getElementById('aiFlaggedCount').textContent = flaggedCount;
+
+            // Display features
+            const features = ai.features || {};
+            const featuresHtml = `
         <div class="col-md-3 mb-3">
             <div class="card h-100">
                 <div class="card-body text-center">
                     <h5>${features.ai_phrases_found || 0}</h5>
-                    <small class="text-muted">AI Phrases</small>
+                    <small class="text-muted">${Translations.t('ai_phrases')}</small>
                 </div>
             </div>
         </div>
@@ -2307,7 +2544,7 @@ function displayAIDetails(data) {
             <div class="card h-100">
                 <div class="card-body text-center">
                     <h5>${features.overused_words_count || 0}</h5>
-                    <small class="text-muted">Overused Words</small>
+                    <small class="text-muted">${Translations.t('overused_words')}</small>
                 </div>
             </div>
         </div>
@@ -2315,7 +2552,7 @@ function displayAIDetails(data) {
             <div class="card h-100">
                 <div class="card-body text-center">
                     <h5>${Math.round((features.starter_repetition || 0) * 100)}%</h5>
-                    <small class="text-muted">Repetition</small>
+                    <small class="text-muted">${Translations.t('repetition')}</small>
                 </div>
             </div>
         </div>
@@ -2323,35 +2560,35 @@ function displayAIDetails(data) {
             <div class="card h-100">
                 <div class="card-body text-center">
                     <h5>${features.sentences_analyzed || 0}</h5>
-                    <small class="text-muted">Analyzed</small>
+                    <small class="text-muted">${Translations.t('analyzed')}</small>
                 </div>
             </div>
         </div>
     `;
-    document.getElementById('aiFeatures').innerHTML = featuresHtml;
-    
-    // Display sentences with highlighting
-    let sentencesHtml = '';
-    if (ai.sentences && ai.sentences.length > 0) {
-        ai.sentences.forEach((sent, index) => {
-            let aiClass = '';
-            let badgeText = '';
-            
-            if (sent.ai_score > 70) {
-                aiClass = 'ai-sentence-high';
-                badgeText = '<span class="badge bg-danger">🔴 HIGH AI</span>';
-            } else if (sent.ai_score > 40) {
-                aiClass = 'ai-sentence-medium';
-                badgeText = '<span class="badge bg-warning text-dark">🟡 MEDIUM AI</span>';
-            } else {
-                aiClass = 'ai-sentence-low';
-                badgeText = '<span class="badge bg-success">🟢 LOW AI</span>';
-            }
-            
-            // Highlight specific words that triggered AI detection
-            let highlightedText = highlightAITriggers(sent.text, sent.ai_score);
-            
-            sentencesHtml += `
+            document.getElementById('aiFeatures').innerHTML = featuresHtml;
+
+            // Display sentences with highlighting
+            let sentencesHtml = '';
+            if (ai.sentences && ai.sentences.length > 0) {
+                ai.sentences.forEach((sent, index) => {
+                    let aiClass = '';
+                    let badgeText = '';
+
+                    if (sent.ai_score > 70) {
+                        aiClass = 'ai-sentence-high';
+                        badgeText = '<span class="badge bg-danger">' + Translations.t('high_ai') + '</span>';
+                    } else if (sent.ai_score > 40) {
+                        aiClass = 'ai-sentence-medium';
+                        badgeText = '<span class="badge bg-warning text-dark">' + Translations.t('medium_ai') + '</span>';
+                    } else {
+                        aiClass = 'ai-sentence-low';
+                        badgeText = '<span class="badge bg-success">' + Translations.t('low_ai') + '</span>';
+                    }
+
+                    // Highlight specific words that triggered AI detection
+                    let highlightedText = highlightAITriggers(sent.text, sent.ai_score);
+
+                    sentencesHtml += `
                 <div class="ai-sentence-item ${aiClass} d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1 me-3">
                         <small class="text-muted">#${index + 1}</small>
@@ -2363,103 +2600,103 @@ function displayAIDetails(data) {
                     </div>
                 </div>
             `;
-        });
-    } else {
-        sentencesHtml = '<p class="text-muted text-center py-3">No sentence-level analysis available</p>';
-    }
-    document.getElementById('aiSentenceList').innerHTML = sentencesHtml;
-    
-    // Display matching AI phrases
-    if (ai.matching_phrases && ai.matching_phrases.length > 0) {
-        let phrasesHtml = '';
-        ai.matching_phrases.forEach(phrase => {
-            phrasesHtml += `<span class="ai-phrase-tag" onclick="searchPhrase('${phrase}')">${phrase}</span>`;
-        });
-        document.getElementById('aiPhrasesList').innerHTML = phrasesHtml;
-        document.getElementById('aiPhrasesCard').style.display = 'block';
-    } else {
-        document.getElementById('aiPhrasesCard').style.display = 'none';
-    }
-}
+                });
+            } else {
+                sentencesHtml = '<p class="text-muted text-center py-3">' + Translations.t('no_sentence_analysis') + '</p>';
+            }
+            document.getElementById('aiSentenceList').innerHTML = sentencesHtml;
 
-function highlightAITriggers(text, score) {
-    // Common AI trigger words/phrases in Armenian
-    const aiTriggers = [
-        'արհեստական', 'բանականություն', 'ըստ իմ', 'իմ գիտելիքներով',
-        'կարևոր է', 'անհրաժեշտ է', 'պետք է', 'հարկ է',
-        'ակնհայտ', 'միանշանակ', 'անկասկած', 'իրականում',
-        'այսինքն', 'այլ կերպ ասած', 'նշանակում է',
-        'սակայն', 'բայց', 'քանի որ', 'որովհետև', 'հետևաբար'
-    ];
-    
-    let highlightedText = text;
-    
-    // Only highlight if score is significant
-    if (score > 40) {
-        aiTriggers.forEach(trigger => {
-            const regex = new RegExp(`(${trigger})`, 'gi');
-            highlightedText = highlightedText.replace(regex, '<span class="ai-word-highlight">$1</span>');
-        });
-    }
-    
-    return highlightedText;
-}
+            // Display matching AI phrases
+            if (ai.matching_phrases && ai.matching_phrases.length > 0) {
+                let phrasesHtml = '';
+                ai.matching_phrases.forEach(phrase => {
+                    phrasesHtml += `<span class="ai-phrase-tag" onclick="searchPhrase('${phrase}')">${phrase}</span>`;
+                });
+                document.getElementById('aiPhrasesList').innerHTML = phrasesHtml;
+                document.getElementById('aiPhrasesCard').style.display = 'block';
+            } else {
+                document.getElementById('aiPhrasesCard').style.display = 'none';
+            }
+        }
 
-function searchPhrase(phrase) {
-    // Search for this phrase in the document
-    alert(`Searching for: "${phrase}"\n(This would highlight all occurrences in a full implementation)`);
-}
+        function highlightAITriggers(text, score) {
+            // Common AI trigger words/phrases in Armenian
+            const aiTriggers = [
+                'արհեստական', 'բանականություն', 'ըստ իմ', 'իմ գիտելիքներով',
+                'կարևոր է', 'անհրաժեշտ է', 'պետք է', 'հարկ է',
+                'ակնհայտ', 'միանշանակ', 'անկասկած', 'իրականում',
+                'այսինքն', 'այլ կերպ ասած', 'նշանակում է',
+                'սակայն', 'բայց', 'քանի որ', 'որովհետև', 'հետևաբար'
+            ];
 
-function exportAIDetails() {
-    const aiScore = document.getElementById('aiOverallScore').textContent;
-    const filename = currentAIFilename;
-    
-    // Create a simple report
-    const report = `
-AI Detection Report
+            let highlightedText = text;
+
+            // Only highlight if score is significant
+            if (score > 40) {
+                aiTriggers.forEach(trigger => {
+                    const regex = new RegExp(`(${trigger})`, 'gi');
+                    highlightedText = highlightedText.replace(regex, '<span class="ai-word-highlight">$1</span>');
+                });
+            }
+
+            return highlightedText;
+        }
+
+        function searchPhrase(phrase) {
+            // Search for this phrase in the document
+            alert(`${Translations.t('searching_for')} "${phrase}"\n(This would highlight all occurrences in a full implementation)`);
+        }
+
+        function exportAIDetails() {
+            const aiScore = document.getElementById('aiOverallScore').textContent;
+            const filename = currentAIFilename;
+
+            // Create a simple report
+            const report = `
+${Translations.t('ai_detection_report')}
 ==================
-File: ${filename}
-AI Probability: ${aiScore}
-Date: ${new Date().toLocaleString()}
+${Translations.t('file_label')} ${filename}
+${Translations.t('ai_probability')}: ${aiScore}
+${Translations.t('date_label')}: ${new Date().toLocaleString()}
 
-This document appears to be ${parseInt(aiScore) > 55 ? 'AI-generated' : 'human-written'}.
+${Translations.t('document_appears')} ${parseInt(aiScore) > 55 ? Translations.t('ai_generated_text') : Translations.t('human_written_text')}.
     `;
-    
-    // Download as text file
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ai-report-${filename}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    showToast('Report downloaded', 'success');
-}
 
-// ==================================================
-// UPDATE THE AI DETECTION TABLE TO USE THE NEW FUNCTION
-// ==================================================
+            // Download as text file
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-report-${filename}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
 
-// Update the loadAIDetection function to add clickable details
-function loadAIDetection() {
-    fetch(`${API_URL}/history?page=0`, { credentials: 'include' })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success && data.history) {
-            let html = '';
-            
-            Promise.all(data.history.map(session => 
-                fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
+            showToast(Translations.t('report_downloaded'), 'success');
+        }
+
+        // ==================================================
+        // UPDATE THE AI DETECTION TABLE TO USE THE NEW FUNCTION
+        // ==================================================
+
+        // Update the loadAIDetection function to add clickable details
+        function loadAIDetection() {
+            fetch(`${API_URL}/history?page=0`, { credentials: 'include' })
                 .then(res => res.json())
-            )).then(sessionsData => {
-                sessionsData.forEach((sessionData, idx) => {
-                    if (sessionData.success && sessionData.files) {
-                        sessionData.files.forEach(file => {
-                            const aiScore = file.ai_score || 0;
-                            const aiLevel = aiScore > 70 ? 'critical' : aiScore > 40 ? 'high' : 'low';
-                            
-                            html += `
+                .then(data => {
+                    if (data.success && data.history) {
+                        let html = '';
+
+                        Promise.all(data.history.map(session =>
+                            fetch(`${API_URL}/history/${session.id}`, { credentials: 'include' })
+                                .then(res => res.json())
+                        )).then(sessionsData => {
+                            sessionsData.forEach((sessionData, idx) => {
+                                if (sessionData.success && sessionData.files) {
+                                    sessionData.files.forEach(file => {
+                                        const aiScore = file.ai_score || 0;
+                                        const aiLevel = aiScore > 70 ? 'critical' : aiScore > 40 ? 'high' : 'low';
+
+                                        html += `
                                 <tr>
                                     <td>${new Date(data.history[idx].upload_time).toLocaleString()}</td>
                                     <td>${escapeHtml(file.filename)}</td>
@@ -2478,175 +2715,184 @@ function loadAIDetection() {
                                     <td>
                                         <button class="btn-modern btn-primary-modern btn-sm" 
                                                 onclick="viewAIDetails(${data.history[idx].id}, '${escapeHtml(file.filename)}')">
-                                            <i class="fas fa-search"></i> Why?
+                                            <i class="fas fa-search"></i> ${Translations.t('why_button')}
                                         </button>
                                     </td>
                                 </tr>
                             `;
+                                    });
+                                }
+                            });
+
+                            document.getElementById('aiDetectionList').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">No AI data</td></tr>';
                         });
                     }
                 });
-                
-                document.getElementById('aiDetectionList').innerHTML = html || '<tr><td colspan="5" style="text-align: center;">No AI data</td></tr>';
-            });
         }
-    });
-}
 
 
     </script>
 
 
 
-<!-- AI Details Modal -->
-<div class="modal fade" id="aiDetailsModal" tabindex="-1" aria-labelledby="aiDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                <h5 class="modal-title" id="aiDetailsModalLabel">
-                    <i class="fas fa-robot me-2"></i> AI Detection Analysis
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="aiDetailsLoading" class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-3">Analyzing document for AI patterns...</p>
+    <!-- AI Details Modal -->
+    <div class="modal fade" id="aiDetailsModal" tabindex="-1" aria-labelledby="aiDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                    <h5 class="modal-title" id="aiDetailsModalLabel">
+                        <i class="fas fa-robot me-2"></i> <span data-translate="ai_detection_analysis">AI Detection Analysis</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                
-                <div id="aiDetailsContent" style="display: none;">
-                    <!-- Summary Cards -->
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h2 id="aiOverallScore" class="display-4 fw-bold">0%</h2>
-                                    <p class="text-muted">Overall AI Probability</p>
+                <div class="modal-body">
+                    <div id="aiDetailsLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden" data-translate="loading">Loading...</span>
+                        </div>
+                        <p class="mt-3" data-translate="analyzing_document">Analyzing document for AI patterns...</p>
+                    </div>
+
+                    <div id="aiDetailsContent" style="display: none;">
+                        <!-- Summary Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h2 id="aiOverallScore" class="display-4 fw-bold">0%</h2>
+                                        <p class="text-muted" data-translate="overall_ai_probability">Overall AI Probability</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h2 id="aiSentenceCount" class="display-4 fw-bold">0</h2>
+                                        <p class="text-muted" data-translate="sentences_analyzed">Sentences Analyzed</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h2 id="aiFlaggedCount" class="display-4 fw-bold">0</h2>
+                                        <p class="text-muted" data-translate="ai_flagged_sentences">AI-Flagged Sentences</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h2 id="aiSentenceCount" class="display-4 fw-bold">0</h2>
-                                    <p class="text-muted">Sentences Analyzed</p>
-                                </div>
+
+                        <!-- Feature Analysis -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-chart-pie me-2"></i> <span data-translate="ai_pattern_analysis">AI Pattern Analysis</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row" id="aiFeatures"></div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h2 id="aiFlaggedCount" class="display-4 fw-bold">0</h2>
-                                    <p class="text-muted">AI-Flagged Sentences</p>
-                                </div>
+
+                        <!-- Sentence-Level Analysis -->
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="fas fa-highlighter me-2"></i> <span data-translate="sentence_analysis">Sentence-by-Sentence Analysis</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">
+                                    <span class="badge bg-danger me-2">🔴 Red</span> ${Translations.t('high_ai_desc')}
+                                    <span class="badge bg-warning text-dark mx-2">🟡 Yellow</span> ${Translations.t('medium_ai_desc')}
+                                    <span class="badge bg-success mx-2">🟢 Green</span> ${Translations.t('low_ai_desc')} </p>
+                                        <div id="aiSentenceList" class="list-group"></div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Feature Analysis -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <i class="fas fa-chart-pie me-2"></i> AI Pattern Analysis
-                        </div>
-                        <div class="card-body">
-                            <div class="row" id="aiFeatures"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Sentence-Level Analysis -->
-                    <div class="card">
-                        <div class="card-header bg-warning text-dark">
-                            <i class="fas fa-highlighter me-2"></i> Sentence-by-Sentence Analysis
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted mb-3">
-                                <span class="badge bg-danger me-2">🔴 Red</span> High AI probability (>70%)
-                                <span class="badge bg-warning text-dark mx-2">🟡 Yellow</span> Medium AI probability (40-70%)
-                                <span class="badge bg-success mx-2">🟢 Green</span> Low AI probability (<40%)
-                            </p>
-                            <div id="aiSentenceList" class="list-group"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Matching AI Phrases -->
-                    <div class="card mt-4" id="aiPhrasesCard" style="display: none;">
-                        <div class="card-header bg-info text-white">
-                            <i class="fas fa-quote-right me-2"></i> Detected AI Phrases
-                        </div>
-                        <div class="card-body">
-                            <div id="aiPhrasesList" class="d-flex flex-wrap gap-2"></div>
+
+                        <!-- Matching AI Phrases -->
+                        <div class="card mt-4" id="aiPhrasesCard" style="display: none;">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-quote-right me-2"></i> <span data-translate="detected_ai_phrases">Detected AI Phrases</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="aiPhrasesList" class="d-flex flex-wrap gap-2"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="exportAIDetails()">
-                    <i class="fas fa-download me-2"></i> Export Report
-                </button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">${Translations.t('close')}</button>
+                    <button type="button" class="btn btn-primary" onclick="exportAIDetails()">
+                        <i class="fas fa-download me-2"></i> ${Translations.t('export_report')}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Add this CSS -->
-<style>
-    .ai-sentence-item {
-        margin-bottom: 10px;
-        padding: 12px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    .ai-sentence-item:hover {
-        transform: translateX(5px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .ai-sentence-high {
-        background-color: rgba(247, 37, 133, 0.15);
-        border-left: 4px solid #f72585;
-    }
-    .ai-sentence-medium {
-        background-color: rgba(248, 150, 30, 0.15);
-        border-left: 4px solid #f8961e;
-    }
-    .ai-sentence-low {
-        background-color: rgba(76, 201, 240, 0.15);
-        border-left: 4px solid #4cc9f0;
-    }
-    .ai-word-highlight {
-        background-color: #f72585;
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-weight: bold;
-    }
-    .feature-badge {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-    }
-    .ai-phrase-tag {
-        background: #e9ecef;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        border: 1px solid #667eea;
-        color: #667eea;
-    }
-    .ai-phrase-tag:hover {
-        background: #667eea;
-        color: white;
-        transform: translateY(-2px);
-        cursor: pointer;
-    }
-</style>
+    <!-- Add this CSS -->
+    <style>
+        .ai-sentence-item {
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-sentence-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-sentence-high {
+            background-color: rgba(247, 37, 133, 0.15);
+            border-left: 4px solid #f72585;
+        }
+
+        .ai-sentence-medium {
+            background-color: rgba(248, 150, 30, 0.15);
+            border-left: 4px solid #f8961e;
+        }
+
+        .ai-sentence-low {
+            background-color: rgba(76, 201, 240, 0.15);
+            border-left: 4px solid #4cc9f0;
+        }
+
+        .ai-word-highlight {
+            background-color: #f72585;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feature-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .ai-phrase-tag {
+            background: #e9ecef;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid #667eea;
+            color: #667eea;
+        }
+
+        .ai-phrase-tag:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            cursor: pointer;
+        }
+    </style>
 
 
 
 
 </body>
+
 </html>

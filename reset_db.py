@@ -1,24 +1,9 @@
 # reset_db.py
 import os
 import sqlite3
-import hashlib
-import secrets
+from auth import hash_password
 
 DB_PATH = 'plagiarism.db'
-
-def hash_password(password, salt=None):
-    """Hash password with PBKDF2"""
-    if salt is None:
-        salt = secrets.token_hex(16)
-    
-    key = hashlib.pbkdf2_hmac(
-        'sha256',
-        password.encode('utf-8'),
-        salt.encode('utf-8'),
-        100000,
-        dklen=32
-    )
-    return key.hex(), salt
 
 print("🗑️ Removing old database...")
 if os.path.exists(DB_PATH):

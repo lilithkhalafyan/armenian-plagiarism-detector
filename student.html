@@ -13,18 +13,775 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="student.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #1e1e2f;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #e2e8f0;
+            --sidebar-width: 280px;
+            
+            --plagiarism-critical: #f72585;
+            --plagiarism-high: #f8961e;
+            --plagiarism-moderate: #ffd166;
+            --plagiarism-low: #4cc9f0;
+            --plagiarism-clean: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            color: var(--success);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem 1.2rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .sidebar-menu-link i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .badge-count {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .badge-count.show {
+            display: inline-block;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .top-navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.5rem 1rem;
+            background: var(--light);
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.15);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 250px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--dark);
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--light);
+        }
+
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-answered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .similarity-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .similarity-badge.CRITICAL {
+            background: var(--plagiarism-critical);
+            color: white;
+        }
+
+        .similarity-badge.HIGH {
+            background: var(--plagiarism-high);
+            color: white;
+        }
+
+        .similarity-badge.MODERATE {
+            background: var(--plagiarism-moderate);
+            color: var(--dark);
+        }
+
+        .similarity-badge.LOW {
+            background: var(--plagiarism-low);
+            color: white;
+        }
+
+        .similarity-meter {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+            width: 100px;
+        }
+
+        .similarity-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .similarity-fill.critical { background: var(--plagiarism-critical); }
+        .similarity-fill.high { background: var(--plagiarism-high); }
+        .similarity-fill.moderate { background: var(--plagiarism-moderate); }
+        .similarity-fill.low { background: var(--plagiarism-low); }
+
+        .btn-modern {
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-outline-modern {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-modern:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(76, 201, 240, 0.05));
+        }
+
+        .upload-area i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.12);
+            border-color: var(--primary);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .result-files {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-file {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .similarity-large {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .ai-score-small {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .modal-content {
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .toast-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast-message.success {
+            border-left-color: var(--success);
+        }
+
+        .toast-message.error {
+            border-left-color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Notifications Dropdown */
+        .notification-bell {
+            position: relative;
+        }
+
+        .notifications-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+            max-height: 400px;
+            overflow: hidden;
+        }
+
+        .notifications-dropdown.show {
+            display: block;
+        }
+
+        .notifications-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(67, 97, 238, 0.05);
+            border-left: 3px solid var(--primary);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-time {
+            color: #adb5bd;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            #menuToggle {
+                display: block;
+            }
+        }
+
+        /* Language Switcher - Fixed Position */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            border-radius: 40px;
+            color: #6c757d;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn i {
+            font-size: 1.2rem;
+        }
+
+        .lang-btn.active {
+            background: #4361ee;
+            color: white;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+        }
+
+        .lang-btn.en.active {
+            background: #4361ee;
+        }
+
+        .lang-btn.hy.active {
+            background: #4361ee;
+        }
+
+        .lang-btn.hy.active i {
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <!-- Modals -->
+
+    <!-- Language Switcher - Fixed Position -->
+    <div class="language-switcher">
+        <button class="lang-btn en active" onclick="Translations.setLanguage('en')" id="langEn">
+            
+            <span>English</span>
+        </button>
+        <button class="lang-btn hy" onclick="Translations.setLanguage('hy')" id="langHy">
+        
+            <span>Հայերեն</span>
+        </button>
+    </div>
     <div class="modal fade" id="infoModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-info-circle"></i>
-                        <span id="infoModalTitle">Information</span>
+                        <span id="infoModalTitle" data-translate="info">Information</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -32,7 +789,7 @@
                     <p id="infoModalMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -44,7 +801,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-question-circle"></i>
-                        <span id="confirmModalTitle">Confirm Action</span>
+                        <span id="confirmModalTitle" data-translate="confirm_action">Confirm Action</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -52,8 +809,8 @@
                     <p id="confirmModalMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmModalBtn" onclick="confirmAction()">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmModalBtn" onclick="confirmAction()" data-translate="confirm">Confirm</button>
                 </div>
             </div>
         </div>
@@ -65,23 +822,23 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-question-circle"></i>
-                        Ask a Question
+                        <span data-translate="ask_question">Ask a Question</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="questionTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="questionTitle" placeholder="e.g., Plagiarism score explanation">
+                        <label for="questionTitle" class="form-label" data-translate="question_title">Title</label>
+                        <input type="text" class="form-control" id="questionTitle" placeholder="e.g., Plagiarism score explanation" data-translate-placeholder="question_placeholder">
                     </div>
                     <div class="mb-3">
-                        <label for="questionText" class="form-label">Your Question</label>
-                        <textarea class="form-control" id="questionText" rows="5" placeholder="Write your question in detail..."></textarea>
+                        <label for="questionText" class="form-label" data-translate="your_question">Your Question</label>
+                        <textarea class="form-control" id="questionText" rows="5" placeholder="Write your question in detail..." data-translate-placeholder="question_detail_placeholder"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitQuestion()">Submit Question</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitQuestion()" data-translate="submit">Submit</button>
                 </div>
             </div>
         </div>
@@ -93,23 +850,23 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-comment"></i>
-                        Send Feedback
+                        <span data-translate="send_feedback">Send Feedback</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="feedbackSubject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="feedbackSubject" placeholder="e.g., Plagiarism detection issue">
+                        <label for="feedbackSubject" class="form-label" data-translate="subject">Subject</label>
+                        <input type="text" class="form-control" id="feedbackSubject" placeholder="e.g., Plagiarism detection issue" data-translate-placeholder="subject_placeholder">
                     </div>
                     <div class="mb-3">
-                        <label for="feedbackMessage" class="form-label">Message</label>
-                        <textarea class="form-control" id="feedbackMessage" rows="5" placeholder="Describe your feedback or issue..."></textarea>
+                        <label for="feedbackMessage" class="form-label" data-translate="your_message">Message</label>
+                        <textarea class="form-control" id="feedbackMessage" rows="5" placeholder="Describe your feedback or issue..." data-translate-placeholder="message_placeholder"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitFeedback()">Send Feedback</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitFeedback()" data-translate="send_feedback">Send Feedback</button>
                 </div>
             </div>
         </div>
@@ -121,13 +878,13 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-reply"></i>
-                        Answer
+                        <span data-translate="answer">Answer</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="answerContent"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -139,15 +896,54 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-chart-line"></i>
-                        Result Details
+                        <span data-translate="result">Result Details</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="resultModalBody">
-                    Loading...
+                    <p data-translate="loading">Loading...</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW MODAL: View Feedback Details -->
+    <div class="modal fade" id="viewFeedbackModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-comment-dots"></i> <span data-translate="feedback_details">Feedback Details</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="subject">Subject:</label>
+                        <p id="viewFeedbackSubject" class="border-bottom pb-2"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="your_message">Your Message:</label>
+                        <p id="viewFeedbackMessage" class="bg-light p-3 rounded"></p>
+                    </div>
+                    <div class="mb-3" id="replyContainer" style="display: none;">
+                        <label class="fw-bold text-success" data-translate="reply">Lecturer's Reply:</label>
+                        <p id="viewFeedbackReply" class="bg-success bg-opacity-10 p-3 rounded"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="status">Status:</label>
+                        <span id="viewFeedbackStatus" class="badge"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold" data-translate="date">Sent on:</label>
+                        <p id="viewFeedbackDate" class="text-muted"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -157,47 +953,47 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <i class="fas fa-shield-alt"></i>
-            <span>Student Panel</span>
+            <span data-translate="app_name">Student Panel</span>
         </div>
         
         <div class="sidebar-menu">
             <button class="sidebar-menu-link active" onclick="showSection('dashboard')">
                 <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+                <span data-translate="nav_dashboard">Dashboard</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('upload')">
                 <i class="fas fa-cloud-upload-alt"></i>
-                <span>Upload & Check</span>
+                <span data-translate="nav_upload">Upload & Check</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('results')">
                 <i class="fas fa-chart-line"></i>
-                <span>My Results</span>
+                <span data-translate="nav_results">My Results</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('submissions')">
                 <i class="fas fa-file-upload"></i>
-                <span>My Submissions</span>
+                <span data-translate="nav_submissions">My Submissions</span>
                 <span class="badge-count" id="sidebarSubmissionsCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('questions')">
                 <i class="fas fa-question-circle"></i>
-                <span>Questions</span>
+                <span data-translate="nav_questions">Questions</span>
                 <span class="badge-count" id="sidebarQuestionsCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('feedback')">
                 <i class="fas fa-comments"></i>
-                <span>Feedback</span>
+                <span data-translate="nav_feedback">Feedback</span>
                 <span class="badge-count" id="sidebarFeedbackCount">0</span>
             </button>
             <button class="sidebar-menu-link" onclick="showSection('ai-results')">
                 <i class="fas fa-robot"></i>
-                <span>AI Detection</span>
+                <span data-translate="nav_ai">AI Detection</span>
             </button>
         </div>
         
         <div style="margin-top: auto; padding-top: 2rem;">
             <button class="sidebar-menu-link" onclick="logout()" style="color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+                <span data-translate="nav_logout">Logout</span>
             </button>
         </div>
     </div>
@@ -212,8 +1008,6 @@
                 <div class="notification-bell" onclick="toggleNotifications()">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge" id="notificationBadge">0</span>
-
-                    <!-- Notifications Dropdown -->
                     <div class="notifications-dropdown" id="notificationsDropdown">
                         <div class="notifications-header">
                             <h6 style="margin: 0;">Notifications</h6>
@@ -247,7 +1041,7 @@
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="stat-value" id="totalSubmissions">0</div>
-                    <div class="stat-label">Total Submissions</div>
+                    <div class="stat-label" data-translate="total_submissions">Total Submissions</div>
                 </div>
                 
                 <div class="stat-card" onclick="showSection('results')">
@@ -255,7 +1049,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="stat-value" id="totalChecks">0</div>
-                    <div class="stat-label">Plagiarism Checks</div>
+                    <div class="stat-label" data-translate="total_checks">Plagiarism Checks</div>
                 </div>
                 
                 <div class="stat-card" onclick="showSection('questions')">
@@ -263,15 +1057,15 @@
                         <i class="fas fa-question-circle"></i>
                     </div>
                     <div class="stat-value" id="pendingQuestions">0</div>
-                    <div class="stat-label">Pending Questions</div>
+                    <div class="stat-label" data-translate="pending_questions">Pending Questions</div>
                 </div>
                 
                 <div class="stat-card" onclick="showSection('ai-results')">
                     <div class="stat-icon">
                         <i class="fas fa-robot"></i>
                     </div>
-                    <div class="stat-value" id="avgAIScore">0%</div>
-                    <div class="stat-label">Average AI Score</div>
+                    <div class="stat-value" id="aiAverageScore">0%</div>
+                    <div class="stat-label" data-translate="avg_ai_score">Average AI Score</div>
                 </div>
             </div>
 
@@ -279,28 +1073,28 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-history"></i>
-                        Recent Results
+                        <span data-translate="recent_results">Recent Results</span>
                     </h3>
                     <button class="btn-modern btn-primary-modern" onclick="refreshData()">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                        <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
                     </button>
                 </div>
                 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Files Compared</th>
-                            <th>Similarity</th>
-                            <th>AI Score</th>
-                            <th>Action</th>
+                            <th data-translate="date">Date</th>
+                            <th data-translate="files_compared">Files Compared</th>
+                            <th data-translate="similarity">Similarity</th>
+                            <th data-translate="ai_score">AI Score</th>
+                            <th data-translate="action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="recentResults">
                         <tr>
                             <td colspan="5" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading...</p>
+                                <p data-translate="loading">Loading...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -311,7 +1105,7 @@
                 <div class="table-container">
                     <h3 class="table-title">
                         <i class="fas fa-chart-bar"></i>
-                        My Plagiarism Trends
+                        <span data-translate="my_trends">My Plagiarism Trends</span>
                     </h3>
                     <canvas id="plagiarismChart" style="max-height: 300px;"></canvas>
                 </div>
@@ -319,7 +1113,7 @@
                 <div class="table-container">
                     <h3 class="table-title">
                         <i class="fas fa-pie-chart"></i>
-                        AI vs Human
+                        <span data-translate="ai_vs_human">AI vs Human</span>
                     </h3>
                     <canvas id="aiChart" style="max-height: 300px;"></canvas>
                 </div>
@@ -335,15 +1129,15 @@
             <div class="table-container">
                 <h3 class="table-title">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    Upload Documents for Plagiarism Check
+                    <span data-translate="upload_title">Upload Documents for Plagiarism Check</span>
                 </h3>
                 
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <h4>Drag & Drop or Click to Upload</h4>
-                    <p class="text-muted">Supported: .txt, .pdf, .doc, .docx, .rtf (Max 100MB)</p>
+                    <h4 data-translate="drag_drop">Drag & Drop or Click to Upload</h4>
+                    <p class="text-muted" data-translate="supported_formats">Supported: .txt, .pdf, .doc, .docx, .rtf (Max 100MB)</p>
                     <button class="btn-modern btn-primary-modern" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-upload"></i> Choose Files
+                        <i class="fas fa-upload"></i> <span data-translate="choose_files">Choose Files</span>
                     </button>
                     <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx,.rtf" style="display: none;">
                 </div>
@@ -359,16 +1153,16 @@
 
                 <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                     <button class="btn-modern btn-primary-modern" id="checkPlagiarismBtn" onclick="checkPlagiarism()" disabled style="flex: 1;">
-                        <i class="fas fa-search"></i> Check Plagiarism
+                        <i class="fas fa-search"></i> <span data-translate="check_plagiarism">Check Plagiarism</span>
                     </button>
                     <button class="btn-modern btn-outline-modern" onclick="clearAll()">
-                        <i class="fas fa-trash-alt"></i> Clear All
+                        <i class="fas fa-trash-alt"></i> <span data-translate="clear_all">Clear All</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- RESULTS SECTION (Student Version - No Highlighting) -->
+        <!-- RESULTS SECTION -->
         <div class="content-section" id="section-results">
             <button class="back-btn" onclick="showSection('dashboard')">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -378,16 +1172,15 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-chart-line"></i>
-                        My Plagiarism Results
+                        <span data-translate="my_results">My Plagiarism Results</span>
                     </h3>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search results..." id="resultsSearch" onkeyup="filterResults()">
+                        <input type="text" data-translate-placeholder="search" placeholder="Search results..." id="resultsSearch" onkeyup="filterResults()">
                     </div>
                 </div>
                 
                 <div id="resultsList" style="max-height: 600px; overflow-y: auto;">
-                    <!-- Results will be loaded here as cards -->
                     <div style="text-align: center; padding: 3rem;">
                         <div class="loading-spinner"></div>
                         <p>Loading results...</p>
@@ -406,18 +1199,18 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-file-upload"></i>
-                        My Submissions
+                        <span data-translate="my_submissions">My Submissions</span>
                     </h3>
                 </div>
                 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Title</th>
-                            <th>Files</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-translate="date">Date</th>
+                            <th data-translate="title">Title</th>
+                            <th data-translate="files">Files</th>
+                            <th data-translate="status">Status</th>
+                            <th data-translate="action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="submissionsList">
@@ -442,20 +1235,20 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-question-circle"></i>
-                        My Questions
+                        <span data-translate="my_questions">My Questions</span>
                     </h3>
                     <button class="btn-modern btn-primary-modern" onclick="openQuestionModal()">
-                        <i class="fas fa-plus"></i> Ask Question
+                        <i class="fas fa-plus"></i> <span data-translate="ask_question">Ask Question</span>
                     </button>
                 </div>
                 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Asked</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-translate="title">Title</th>
+                            <th data-translate="asked">Asked</th>
+                            <th data-translate="status">Status</th>
+                            <th data-translate="action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="questionsList">
@@ -480,27 +1273,27 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-comments"></i>
-                        My Feedback
+                        <span data-translate="my_feedback">My Feedback</span>
                     </h3>
                     <button class="btn-modern btn-primary-modern" onclick="openFeedbackModal()">
-                        <i class="fas fa-plus"></i> Send Feedback
+                        <i class="fas fa-plus"></i> <span data-translate="send_feedback">Send Feedback</span>
                     </button>
                 </div>
                 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Subject</th>
-                            <th>Sent</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-translate="feedback_subject">Subject</th>
+                            <th data-translate="feedback_sent">Sent</th>
+                            <th data-translate="feedback_status">Status</th>
+                            <th data-translate="feedback_action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="feedbackList">
                         <tr>
                             <td colspan="4" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading feedback...</p>
+                                <p data-translate="loading_feedback">Loading feedback...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -508,50 +1301,50 @@
             </div>
         </div>
 
-        <!-- AI RESULTS SECTION (Student Version) -->
+        <!-- AI RESULTS SECTION -->
         <div class="content-section" id="section-ai-results">
             <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
             </button>
             
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">
                         <i class="fas fa-robot"></i>
-                        AI Content Detection Results
+                        <span data-translate="ai_detection">AI Content Detection Results</span>
                     </h3>
                 </div>
 
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="aiTotalFiles">0</div>
-                        <div class="stat-label">Files Checked</div>
+                        <div class="stat-label" data-translate="files_checked">Files Checked</div>
                     </div>
-                    <div class="stat-card">
+                    <!-- <div class="stat-card">
                         <div class="stat-value" id="aiAverageScore">0%</div>
-                        <div class="stat-label">Average AI Score</div>
-                    </div>
+                        <div class="stat-label" data-translate="avg_ai_score">Average AI Score</div>
+                    </div> -->
                     <div class="stat-card">
                         <div class="stat-value" id="aiHumanCount">0</div>
-                        <div class="stat-label">Human Written</div>
+                        <div class="stat-label" data-translate="human_written">Human Written</div>
                     </div>
                 </div>
                 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Filename</th>
-                            <th>AI Score</th>
-                            <th>Result</th>
-                            <th>Action</th>
+                            <th data-translate="date">Date</th>
+                            <th data-translate="filename">Filename</th>
+                            <th data-translate="ai_score_col">AI Score</th>
+                            <th data-translate="result">Result</th>
+                            <th data-translate="actions">Action</th>
                         </tr>
                     </thead>
                     <tbody id="aiResultsList">
                         <tr>
                             <td colspan="5" style="text-align: center;">
                                 <div class="loading-spinner"></div>
-                                <p>Loading AI results...</p>
+                                <p data-translate="loading_ai_results">Loading AI results...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -562,6 +1355,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Translations -->
+    <script src="translations.js"></script>
     <!-- Custom JS -->
     <script src="student.js"></script>
 </body>
