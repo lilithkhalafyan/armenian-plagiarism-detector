@@ -4,6 +4,7 @@ import json
 import sqlite3
 from typing import Dict
 
+from auth import hash_password
 from config import DB_PATH, logger
 
 
@@ -22,6 +23,33 @@ def init_db() -> None:
         c = conn.cursor()
 
         # Users table
+        c.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'")
+        existing_users = c.fetchone()
+        if existing_users and 'CHECK(role IN (\'lecturer\', \'student\'))' in existing_users['sql']:
+            logger.info('Migrating users table role constraint to include admin')
+            c.execute('PRAGMA foreign_keys = OFF')
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS users_new (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    full_name TEXT NOT NULL,
+                    email TEXT UNIQUE NOT NULL,
+                    password_hash TEXT NOT NULL,
+                    salt TEXT NOT NULL,
+                    role TEXT NOT NULL CHECK(role IN ('lecturer', 'student', 'admin')),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    last_login TIMESTAMP,
+                    is_active INTEGER DEFAULT 1
+                )
+            ''')
+            c.execute('''
+                INSERT OR IGNORE INTO users_new (id, username, full_name, email, password_hash, salt, role, created_at, last_login, is_active)
+                SELECT id, username, full_name, email, password_hash, salt, role, created_at, last_login, is_active FROM users
+            ''')
+            c.execute('DROP TABLE users')
+            c.execute('ALTER TABLE users_new RENAME TO users')
+            c.execute('PRAGMA foreign_keys = ON')
+
         c.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,12 +58,22 @@ def init_db() -> None:
                 email TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 salt TEXT NOT NULL,
-                role TEXT NOT NULL CHECK(role IN ('lecturer', 'student')),
+                role TEXT NOT NULL CHECK(role IN ('lecturer', 'student', 'admin')),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_login TIMESTAMP,
                 is_active INTEGER DEFAULT 1
             )
         ''')
+
+        # Ensure there is always an initial admin account for testing.
+        c.execute('SELECT id FROM users WHERE role = ?', ('admin',))
+        if not c.fetchone():
+            password_hash, salt = hash_password('admin123')
+            c.execute('''
+                INSERT OR IGNORE INTO users (
+                    username, full_name, email, password_hash, salt, role
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            ''', ('admin', 'Administrator', 'admin@example.com', password_hash, salt, 'admin'))
 
         # Sessions table
         c.execute('''

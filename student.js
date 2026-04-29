@@ -389,7 +389,12 @@ async function checkPlagiarism() {
                 showSection('results');
                 loadResults();
             } else {
-                showModal('Error', data.error || 'Check failed', 'error');
+                let errorMessage = data.error || 'Check failed';
+                if (data.problematic_files && data.problematic_files.length) {
+                    const problems = data.problematic_files.map(p => `${p.name}: ${p.reason}`).join('\n');
+                    errorMessage += '\n\n' + problems;
+                }
+                showModal('Error', errorMessage, 'error');
             }
         } catch(e) { showModal('Error', 'Invalid response', 'error'); }
     });

@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/student_works.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecturer Dashboard - Armenian Plagiarism Detector</title>
     <!-- Bootstrap 5 CSS -->
@@ -1027,6 +1028,50 @@
         </div>
     </div>
 
+    <!-- AI Analysis Modal for Student Works -->
+    <div class="modal fade" id="aiAnalysisModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-robot"></i> <span id="aiModalTitle">AI Analysis</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="aiAnalysisContent" style="max-height: 60vh; overflow-y: auto;">
+                        Loading...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Comparison Modal -->
+    <div class="modal fade" id="comparisonModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exchange-alt"></i> <span>File Comparison - Plagiarism Detection</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="comparisonContent" style="max-height: 70vh; overflow-y: auto;">
+                        Loading...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
@@ -1070,6 +1115,10 @@
             <button class="sidebar-menu-link" onclick="showSection('ai-detection')">
                 <i class="fas fa-robot"></i>
                 <span data-translate="nav_ai">AI Detection</span>
+            </button>
+            <button class="sidebar-menu-link" onclick="showSection('student-works')">
+                <i class="fas fa-users-viewfinder"></i>
+                <span data-translate="student_works">Student Works</span>
             </button>
         </div>
 
@@ -1207,7 +1256,44 @@
             </div>
         </div>
 
-        <!-- STUDENTS SECTION -->
+        <!-- STUDENT WORKS SECTION -->
+        <div class="content-section" id="section-student-works">
+            <button class="back-btn" onclick="showSection('dashboard')">
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
+            </button>
+            <div class="student-works-layout">
+                <div class="students-list-panel">
+                    <div class="students-list-header">
+                        <h4><i class="fas fa-user-graduate"></i> <span data-translate="students">Students</span></h4>
+                        <input id="studentSearchInput" type="text" class="form-control" placeholder="Search students..." onkeyup="StudentWorks.filterStudents()">
+                    </div>
+                    <div id="studentsListContainer"></div>
+                </div>
+                <div class="works-panel">
+                    <div class="works-header">
+                        <div>
+                            <h4><i class="fas fa-folder-open"></i> <span data-translate="student_works">Student Works</span></h4>
+                        </div>
+                        <button id="compareFilesBtn" class="btn-compare" onclick="StudentWorks.openCompareModal()" style="display:none;">
+                            <i class="fas fa-exchange-alt"></i> Compare Selected
+                        </button>
+                    </div>
+                    <div id="studentWorksList" class="works-list"></div>
+                </div>
+                <div class="chat-panel">
+                    <div class="chat-header" id="chatHeader">
+                        <i class="fas fa-comments"></i> <span data-translate="select_student_work_chat">Select a student and a work</span>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="empty-state"><span data-translate="select_student_work_hint">Choose a student and a file to start chatting</span></div>
+                    </div>
+                    <div class="chat-input">
+                        <textarea id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                        <button type="button" onclick="StudentWorks.sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="content-section" id="section-students">
             <button class="back-btn" onclick="showSection('dashboard')">
                 <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
@@ -1252,7 +1338,7 @@
             </div>
         </div>
 
-        <!-- UPLOAD SECTION -->
+        <!-- UPLOAD SECTION WITH TABS FOR MIXED COMPARISON -->
         <div class="content-section" id="section-upload">
             <button class="back-btn" onclick="showSection('dashboard')">
                 <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
@@ -1264,24 +1350,74 @@
                     <span data-translate="upload_documents">Upload Documents</span>
                 </h3>
 
-                <div class="upload-area" id="uploadArea">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <h4 data-translate="drag_drop">Drag & Drop or Click to Upload</h4>
-                    <p class="text-muted" data-translate="supported_formats">Supported: .txt, .pdf, .doc, .docx, .rtf</p>
-                    <button class="btn-modern btn-primary-modern"
-                        onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-upload"></i> <span data-translate="choose_files">Choose Files</span>
-                    </button>
-                    <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx,.rtf"
-                        style="display: none;">
+                <!-- Tabs for upload mode selection -->
+                <ul class="nav nav-tabs" id="uploadTabs" role="tablist" style="margin-bottom: 2rem; border-bottom: 2px solid var(--border);">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="device-tab" data-bs-toggle="tab" data-bs-target="#device-upload" type="button" role="tab" aria-controls="device-upload" aria-selected="true">
+                            <i class="fas fa-upload"></i> <span data-translate="upload_from_device">Upload from Device</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="student-tab" data-bs-toggle="tab" data-bs-target="#student-files" type="button" role="tab" aria-controls="student-files" aria-selected="false">
+                            <i class="fas fa-file-alt"></i> <span data-translate="select_from_students">Select from Students</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="uploadTabContent">
+                    <!-- Tab 1: Device Upload -->
+                    <div class="tab-pane fade show active" id="device-upload" role="tabpanel" aria-labelledby="device-tab">
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h4 data-translate="drag_drop">Drag & Drop or Click to Upload</h4>
+                            <p class="text-muted" data-translate="supported_formats">Supported: .txt, .pdf, .doc, .docx, .rtf</p>
+                            <button class="btn-modern btn-primary-modern" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-upload"></i> <span data-translate="choose_files">Choose Files</span>
+                            </button>
+                            <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx,.rtf" style="display: none;">
+                        </div>
+                        <div class="file-list" id="fileList" style="margin-top: 2rem;"></div>
+                    </div>
+
+                    <!-- Tab 2: Student Files Selection -->
+                    <div class="tab-pane fade" id="student-files" role="tabpanel" aria-labelledby="student-tab">
+                        <div style="margin-bottom: 1rem;">
+                            <div class="search-box" style="margin-bottom: 1rem;">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="studentFilesSearch" placeholder="Search student files..." onkeyup="filterStudentFiles()">
+                            </div>
+                            <button class="btn-modern btn-outline-modern btn-sm" onclick="selectAllStudentFiles()">
+                                <i class="fas fa-check-square"></i> <span data-translate="select_all">Select All</span>
+                            </button>
+                        </div>
+                        <div id="studentFilesLoading" style="text-align: center; padding: 2rem;">
+                            <div class="loading-spinner"></div>
+                            <p data-translate="loading_student_files">Loading student files...</p>
+                        </div>
+                        <table class="data-table" id="studentFilesTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="selectAllStudentFiles()"></th>
+                                    <th data-translate="student_name">Student Name</th>
+                                    <th data-translate="file_name">File Name</th>
+                                    <th data-translate="uploaded_on">Uploaded On</th>
+                                    <th data-translate="word_count">Word Count</th>
+                                    <th data-translate="ai_score">AI Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentFilesList">
+                            </tbody>
+                        </table>
+                        <div id="noStudentFiles" style="text-align: center; padding: 2rem; display: none;">
+                            <p class="text-muted" data-translate="no_student_files">No student files available</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="file-list" id="fileList" style="margin-top: 2rem;"></div>
-
+                <!-- Action Buttons -->
                 <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button class="btn-modern btn-primary-modern" id="checkPlagiarismBtn" onclick="checkPlagiarism()"
-                        disabled style="flex: 1;">
-                        <i class="fas fa-search"></i> <span data-translate="check_plagiarism">Check Plagiarism</span>
+                    <button class="btn-modern btn-primary-modern" id="checkPlagiarismBtn" onclick="checkMixedPlagiarism()" disabled style="flex: 1;">
+                        <i class="fas fa-search"></i> <span data-translate="compare_selected">Compare Selected</span>
                     </button>
                     <button class="btn-modern btn-outline-modern" onclick="clearAll()">
                         <i class="fas fa-trash-alt"></i> <span data-translate="clear_all">Clear</span>
@@ -1484,7 +1620,7 @@
     <script src="translations.js"></script>
 
     <script>
-        const API_URL = 'http://127.0.0.1:5000/api';
+        const API_URL = '/api';
         let currentUser = null;
         let uploadedFiles = [];
         let currentQuestionId = null;
@@ -1599,9 +1735,10 @@
                 'questions': Translations.t('my_questions'),
                 'feedback': Translations.t('manage_feedback'),
                 'plagiarism': Translations.t('plagiarism_report'),
-                'ai-detection': Translations.t('ai_detection')
+                'ai-detection': Translations.t('ai_detection'),
+                'student-works': Translations.t('student_works')
             };
-            document.getElementById('pageTitle').textContent = titles[sectionId];
+            document.getElementById('pageTitle').textContent = titles[sectionId] || titles['dashboard'];
 
             // Load data when section is shown
             if (sectionId === 'students') loadStudentsList();
@@ -1610,6 +1747,7 @@
             if (sectionId === 'feedback') loadFeedback();
             if (sectionId === 'plagiarism') loadPlagiarismReports();
             if (sectionId === 'ai-detection') loadAIDetection();
+            if (sectionId === 'student-works') StudentWorks.init();
         }
 
         function toggleSidebar() {
@@ -1999,6 +2137,171 @@
                 showModal('Error', Translations.t('connection_error') + ': ' + error.message, 'error');
             }
         }
+
+        // ==================================================
+        // NEW: MIXED PLAGIARISM COMPARISON FUNCTIONS
+        // ==================================================
+        let selectedStudentFileIds = [];
+
+        async function loadStudentFiles() {
+            const loadingDiv = document.getElementById('studentFilesLoading');
+            const tableDiv = document.getElementById('studentFilesTable');
+            const noFilesDiv = document.getElementById('noStudentFiles');
+
+            try {
+                const response = await fetch(`${API_URL}/student-files`, { credentials: 'include' });
+                const data = await response.json();
+
+                if (data.success && data.files && data.files.length > 0) {
+                    renderStudentFilesTable(data.files);
+                    loadingDiv.style.display = 'none';
+                    tableDiv.style.display = 'table';
+                    noFilesDiv.style.display = 'none';
+                } else {
+                    loadingDiv.style.display = 'none';
+                    tableDiv.style.display = 'none';
+                    noFilesDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading student files:', error);
+                loadingDiv.style.display = 'none';
+                noFilesDiv.style.display = 'block';
+                showModal('Error', Translations.t('error_loading_files'), 'error');
+            }
+        }
+
+        function renderStudentFilesTable(files) {
+            const tbody = document.getElementById('studentFilesList');
+            let html = '';
+            
+            files.forEach(file => {
+                const uploadDate = new Date(file.upload_time).toLocaleDateString();
+                const aiScore = (file.ai_score * 100).toFixed(1);
+                const aiStatus = file.ai_score > 0.7 ? 'ai_generated' : 'human_written';
+                
+                html += `
+                    <tr>
+                        <td style="width: 40px;">
+                            <input type="checkbox" class="student-file-checkbox" value="${file.id}" 
+                                onchange="updateSelectedIds()">
+                        </td>
+                        <td>${escapeHtml(file.student_name)}</td>
+                        <td>${escapeHtml(file.filename)}</td>
+                        <td>${uploadDate}</td>
+                        <td>${file.word_count || 0}</td>
+                        <td>
+                            <span class="badge ${file.ai_score > 0.7 ? 'bg-danger' : 'bg-success'}">
+                                ${aiScore}%
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        function filterStudentFiles() {
+            const searchTerm = document.getElementById('studentFilesSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#studentFilesList tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function selectAllStudentFiles() {
+            const checkboxes = document.querySelectorAll('.student-file-checkbox');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            
+            if (selectAllCheckbox.checked) {
+                checkboxes.forEach(cb => cb.checked = true);
+            } else {
+                checkboxes.forEach(cb => cb.checked = false);
+            }
+            updateSelectedIds();
+        }
+
+        function updateSelectedIds() {
+            const checkboxes = document.querySelectorAll('.student-file-checkbox:checked');
+            selectedStudentFileIds = Array.from(checkboxes).map(cb => cb.value);
+            updateCheckPlagiarismButton();
+        }
+
+        function updateCheckPlagiarismButton() {
+            const btn = document.getElementById('checkPlagiarismBtn');
+            const deviceFilesCount = uploadedFiles.length;
+            const studentFilesCount = selectedStudentFileIds.length;
+            const totalFiles = deviceFilesCount + studentFilesCount;
+            
+            if (totalFiles >= 2) {
+                btn.disabled = false;
+                btn.textContent = `✓ ${Translations.t('compare_selected')} (${totalFiles})`;
+            } else {
+                btn.disabled = true;
+                btn.textContent = Translations.t('compare_selected');
+            }
+        }
+
+        async function checkMixedPlagiarism() {
+            const deviceFilesCount = uploadedFiles.length;
+            const studentFilesCount = selectedStudentFileIds.length;
+            
+            if (deviceFilesCount + studentFilesCount < 2) {
+                showModal('Error', Translations.t('select_at_least_2_files'), 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            
+            // Add device files
+            uploadedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            // Add selected student file IDs
+            formData.append('file_ids', JSON.stringify(selectedStudentFileIds));
+
+            try {
+                const response = await fetch(`${API_URL}/compare-mixed`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(Translations.t('mixed_comparison_complete'), 'success');
+                    showSection('plagiarism');
+                    loadPlagiarismReports();
+                } else {
+                    showModal('Error', data.error || Translations.t('check_failed'), 'error');
+                }
+            } catch (error) {
+                showModal('Error', Translations.t('connection_error') + ': ' + error.message, 'error');
+            }
+        }
+
+        // Modify tab loading to call loadStudentFiles when switching tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentTab = document.getElementById('student-tab');
+            if (studentTab) {
+                studentTab.addEventListener('shown.bs.tab', function() {
+                    loadStudentFiles();
+                });
+            }
+
+            // Update button state when files are added/removed
+            const checkBtn = document.getElementById('checkPlagiarismBtn');
+            if (checkBtn) {
+                const observer = new MutationObserver(() => {
+                    updateCheckPlagiarismButton();
+                });
+                observer.observe(document.getElementById('fileList'), { childList: true });
+            }
+        });
 
         // ==================================================
         // SUBMISSIONS SECTION
@@ -2890,7 +3193,7 @@ ${Translations.t('document_appears')} ${parseInt(aiScore) > 55 ? Translations.t(
         }
     </style>
 
-
+<script src="/static/student_works.js"></script>
 
 
 </body>

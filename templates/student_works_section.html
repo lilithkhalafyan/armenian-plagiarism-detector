@@ -1,0 +1,32 @@
+<!-- Student Works Section (add inside lecturer.html) -->
+<div class="content-section" id="section-student-works">
+    <button class="back-btn" onclick="showSection('dashboard')">
+        <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
+    </button>
+    
+    <div class="student-works-layout">
+        <!-- Left: Students List -->
+        <div class="students-list-panel">
+            <div id="studentsListContainer"></div>
+        </div>
+        
+        <!-- Center: Student's Works -->
+        <div class="works-panel">
+            <div id="studentWorksList"></div>
+        </div>
+        
+        <!-- Right: Chat -->
+        <div class="chat-panel">
+            <div class="chat-header" id="chatHeader">
+                <i class="fas fa-comments"></i> Select a student and a work
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="empty-state">Choose a student and a file to start chatting</div>
+            </div>
+            <div class="chat-input">
+                <textarea id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                <button onclick="StudentWorks.sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

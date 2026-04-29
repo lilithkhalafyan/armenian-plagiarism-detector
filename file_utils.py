@@ -71,7 +71,20 @@ def extract_text_from_pdf(filepath: str) -> str:
     else:
         logger.warning("tika not installed")
 
-    # Method 4: Fallback - try to extract any text as bytes
+    # Method 4: Try pdfminer.six if available
+    if importlib.util.find_spec('pdfminer.high_level') is not None:
+        try:
+            from pdfminer.high_level import extract_text as pdfminer_extract_text
+            text = pdfminer_extract_text(filepath)
+            if text and len(text.strip()) > 0:
+                logger.info(f"✅ pdfminer extracted {len(text)} chars")
+                return text
+        except Exception as e:
+            logger.warning(f"pdfminer failed: {e}")
+    else:
+        logger.warning("pdfminer not installed")
+
+    # Method 5: Fallback - try to extract any text as bytes
     try:
         with open(filepath, 'rb') as f:
             raw = f.read()
@@ -88,7 +101,7 @@ def extract_text_from_pdf(filepath: str) -> str:
         logger.warning(f"Raw extraction failed: {e}")
 
     logger.error(f"❌ All PDF extraction methods failed for {filepath}")
-    raise RuntimeError(f"Could not extract text from {filepath}. Install pdfplumber or tika.")
+    raise RuntimeError(f"Could not extract text from PDF. This might be an image-based PDF (scan) or corrupted file. Please use text-based PDFs or convert scanned documents to text first.")
 
 
 def extract_text_from_docx(filepath: str) -> str:

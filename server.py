@@ -16,7 +16,7 @@ from werkzeug.utils import secure_filename
 
 from ai_detection import detect_ai_content
 from auth import (hash_password, login_required, lecturer_required,
-                  student_required, verify_password)
+                  student_required, admin_required, verify_password)
 from config import (MODEL_AVAILABLE, SYNONYMS, STOPWORDS, THEME_KEYWORDS,
                     UPLOAD_FOLDER, logger)
 from db import (create_notification, get_db, init_db, record_file,
@@ -25,11 +25,11 @@ from file_utils import (allowed_file, detect_theme, extract_keywords, load_text,
                         preprocess_text)
 from similarity import (calculate_enhanced_similarity, get_plagiarism_level,
                         highlight_word_level)
-
+from student_works import student_works_bp
 # ==================================================
 # APP CONFIGURATION
 # ==================================================
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = os.urandom(32).hex()
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -38,7 +38,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB limit
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'doc', 'docx', 'rtf'}
-
+app.register_blueprint(student_works_bp)
 # ==================================================
 # CORS CONFIGURATION
 # ==================================================
@@ -156,7 +156,9 @@ def register():
     if not all(data.get(field) for field in required):
         return jsonify({'success': False, 'error': 'All fields are required'}), 400
     
-    if data['role'] not in ['lecturer', 'student']:
+    if data['role'] == 'lecturer':
+        return jsonify({'success': False, 'error': 'Only admin can register lecturer accounts'}), 403
+    if data['role'] != 'student':
         return jsonify({'success': False, 'error': 'Invalid role'}), 400
     
     if not re.match(r'^[^@]+@[^@]+\.[^@]+$', data['email']):
@@ -287,6 +289,102 @@ def current_user():
     
     return jsonify({'success': False, 'user': None})
 
+@app.route('/api/admin/users', methods=['GET', 'OPTIONS'])
+@admin_required
+def admin_get_users():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('''
+                SELECT id, username, full_name, email, role, created_at, last_login
+                FROM users
+                ORDER BY created_at DESC
+            ''')
+            users = c.fetchall()
+            result = []
+            for u in users:
+                result.append({
+                    'id': u['id'],
+                    'username': u['username'],
+                    'full_name': u['full_name'],
+                    'email': u['email'],
+                    'role': u['role'],
+                    'created_at': u['created_at'],
+                    'last_login': u['last_login']
+                })
+            return jsonify({'success': True, 'users': result})
+    except Exception as e:
+        logger.error(f"Error getting admin users: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/users', methods=['POST', 'OPTIONS'])
+@admin_required
+def admin_create_user():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+
+    data = request.json or {}
+    required = ['username', 'full_name', 'email', 'password', 'role']
+    if not all(data.get(field) for field in required):
+        return jsonify({'success': False, 'error': 'All fields are required'}), 400
+
+    if data['role'] not in ['lecturer', 'student']:
+        return jsonify({'success': False, 'error': 'Role must be lecturer or student'}), 400
+
+    if not re.match(r'^[^@]+@[^@]+\.[^@]+$', data['email']):
+        return jsonify({'success': False, 'error': 'Invalid email format'}), 400
+
+    if len(data['password']) < 6:
+        return jsonify({'success': False, 'error': 'Password must be at least 6 characters'}), 400
+
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('SELECT id FROM users WHERE username = ? OR email = ?',
+                      (data['username'], data['email']))
+            if c.fetchone():
+                return jsonify({'success': False, 'error': 'Username or email already exists'}), 400
+
+            password_hash, salt = hash_password(data['password'])
+            c.execute('''
+                INSERT INTO users (username, full_name, email, password_hash, salt, role)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (data['username'], data['full_name'], data['email'], password_hash, salt, data['role']))
+            conn.commit()
+            return jsonify({'success': True, 'message': 'User created successfully'})
+    except Exception as e:
+        logger.error(f"Error creating admin user: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/users/<int:user_id>', methods=['DELETE', 'OPTIONS'])
+@admin_required
+def admin_delete_user(user_id):
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+
+    current_user_id = session.get('user_id')
+    if current_user_id == user_id:
+        return jsonify({'success': False, 'error': 'Admin users cannot delete themselves'}), 403
+
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('SELECT role FROM users WHERE id = ?', (user_id,))
+            target = c.fetchone()
+            if not target:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            if target['role'] == 'admin':
+                return jsonify({'success': False, 'error': 'Admin users cannot be deleted'}), 403
+
+            c.execute('DELETE FROM users WHERE id = ?', (user_id,))
+            conn.commit()
+            return jsonify({'success': True, 'message': 'User deleted successfully'})
+    except Exception as e:
+        logger.error(f"Error deleting admin user: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ==================================================
 # API ENDPOINTS - PLAGIARISM CHECK
 # ==================================================
@@ -339,10 +437,17 @@ def armenian_plagiarism_check():
                     
                     # Extract text
                     text = load_text(filepath)
-                    if not text or len(text.strip()) < 20:
+                    if not text:
                         problematic_files.append({
                             'name': file.filename,
-                            'reason': 'Could not extract text or text too short (minimum 20 characters)'
+                            'reason': 'Could not extract any text from this file. Please ensure it contains readable text (not just images).'
+                        })
+                        os.remove(filepath)
+                        continue
+                    elif len(text.strip()) < 50:  # Increased minimum to 50 characters
+                        problematic_files.append({
+                            'name': file.filename,
+                            'reason': f'Text too short ({len(text.strip())} characters). Minimum 50 characters required for meaningful analysis.'
                         })
                         os.remove(filepath)
                         continue
@@ -1889,6 +1994,10 @@ def lecturer_page():
 def student_page():
     return send_from_directory('.', 'student.html')
 
+@app.route('/admin.html')
+def admin_page():
+    return send_from_directory('.', 'admin.html')
+
 # ==================================================
 # MAIN
 # ==================================================
@@ -1954,6 +2063,325 @@ if __name__ == '__main__':
     print("👥 Student: username='student', password='student123'")
     print("📝 Log file: plagiarism_detector.log")
     print("=" * 70)
+
+# ==================================================
+# NEW ENDPOINTS FOR MIXED PLAGIARISM COMPARISON
+# ==================================================
+
+@app.route('/api/student-files', methods=['GET', 'OPTIONS'])
+@lecturer_required
+def get_student_files():
+    """Get list of all student uploaded files for selection."""
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
     
-    # Run the app
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            
+            # Query uploaded_files joined with sessions and users where role='student'
+            c.execute('''
+                SELECT 
+                    uf.id,
+                    uf.filename,
+                    u.full_name as student_name,
+                    u.id as student_id,
+                    uf.upload_time,
+                    uf.file_size,
+                    uf.word_count,
+                    uf.ai_score,
+                    uf.detected_theme
+                FROM uploaded_files uf
+                JOIN sessions s ON uf.session_id = s.id
+                JOIN users u ON s.user_id = u.id
+                WHERE u.role = 'student'
+                ORDER BY uf.upload_time DESC
+            ''')
+            
+            files = c.fetchall()
+            
+            result = []
+            for f in files:
+                result.append({
+                    'id': f['id'],
+                    'filename': f['filename'],
+                    'student_name': f['student_name'],
+                    'student_id': f['student_id'],
+                    'upload_time': f['upload_time'],
+                    'file_size': f['file_size'],
+                    'word_count': f['word_count'],
+                    'ai_score': float(f['ai_score']) if f['ai_score'] is not None else 0,
+                    'detected_theme': f['detected_theme']
+                })
+            
+            return jsonify({
+                'success': True,
+                'files': result,
+                'count': len(result)
+            })
+    
+    except Exception as e:
+        logger.error(f"Error getting student files: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/compare-mixed', methods=['POST', 'OPTIONS'])
+@lecturer_required
+def compare_mixed_sources():
+    """Compare files from both new uploads and existing student submissions."""
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    
+    try:
+        user_id = session['user_id']
+        user_role = session.get('role')
+        
+        uploaded_files = []
+        problematic_files = []
+        
+        # Process new file uploads
+        if 'files' in request.files:
+            files = request.files.getlist('files')
+            
+            for file in files:
+                if file and allowed_file(file.filename):
+                    try:
+                        file.seek(0, os.SEEK_END)
+                        file_size = file.tell()
+                        file.seek(0)
+                        
+                        if file_size == 0:
+                            problematic_files.append({
+                                'name': file.filename,
+                                'reason': 'File is empty'
+                            })
+                            continue
+                        
+                        if file_size > 100 * 1024 * 1024:  # 100MB
+                            problematic_files.append({
+                                'name': file.filename,
+                                'reason': 'File too large (max 100MB)'
+                            })
+                            continue
+                        
+                        safe_name = secure_filename(file.filename)
+                        stored_name = f"{uuid.uuid4().hex}_{safe_name}"
+                        filepath = os.path.join(UPLOAD_FOLDER, stored_name)
+                        file.save(filepath)
+                        
+                        # Extract text
+                        text = load_text(filepath)
+                        if not text:
+                            problematic_files.append({
+                                'name': file.filename,
+                                'reason': 'Could not extract text from file'
+                            })
+                            os.remove(filepath)
+                            continue
+                        elif len(text.strip()) < 50:
+                            problematic_files.append({
+                                'name': file.filename,
+                                'reason': f'Text too short ({len(text.strip())} characters). Minimum 50 required.'
+                            })
+                            os.remove(filepath)
+                            continue
+                        
+                        uploaded_files.append({
+                            "original_name": file.filename,
+                            "stored_name": stored_name,
+                            "path": filepath,
+                            "size": file_size,
+                            "is_new": True
+                        })
+                    
+                    except Exception as e:
+                        logger.error(f"Error processing file {file.filename}: {e}")
+                        problematic_files.append({
+                            'name': file.filename,
+                            'reason': f'Error: {str(e)}'
+                        })
+        
+        # Process existing file IDs from student submissions
+        file_ids_str = request.form.get('file_ids', '[]')
+        try:
+            file_ids = json.loads(file_ids_str)
+        except:
+            file_ids = []
+        
+        if file_ids:
+            with get_db() as conn:
+                c = conn.cursor()
+                
+                for file_id in file_ids:
+                    try:
+                        c.execute('''
+                            SELECT id, filename, stored_filename, file_size
+                            FROM uploaded_files
+                            WHERE id = ?
+                        ''', (file_id,))
+                        
+                        f = c.fetchone()
+                        if f:
+                            filepath = os.path.join(UPLOAD_FOLDER, f['stored_filename'])
+                            if os.path.exists(filepath):
+                                uploaded_files.append({
+                                    "original_name": f['filename'],
+                                    "stored_name": f['stored_filename'],
+                                    "path": filepath,
+                                    "size": f['file_size'],
+                                    "is_new": False,
+                                    "db_id": f['id']
+                                })
+                    except Exception as e:
+                        logger.error(f"Error retrieving file {file_id}: {e}")
+        
+        # Require at least 2 files
+        if len(uploaded_files) < 2:
+            return jsonify({
+                "success": False,
+                "error": "Please select or upload at least 2 files",
+                "problematic_files": problematic_files
+            }), 400
+        
+        # Process files for comparison
+        all_text = ""
+        file_data = []
+        
+        for uf in uploaded_files:
+            text = load_text(uf['path'])
+            if text:
+                file_data.append({
+                    "name": uf['original_name'],
+                    "text": text,
+                    "path": uf['path'],
+                    "size": uf['size'],
+                    "is_new": uf['is_new']
+                })
+                all_text += text + " "
+        
+        if len(file_data) < 2:
+            return jsonify({
+                "success": False,
+                "error": "Not enough valid files after processing"
+            }), 400
+        
+        # Detect main theme
+        themes = detect_theme(all_text)
+        main_theme = themes[0][0] if themes else "general"
+        
+        # Create session
+        session_id = record_session(user_id, len(file_data), main_theme)
+        
+        # Process each file
+        file_records = []
+        file_info = []
+        ai_analysis = {}
+        theme_analysis = {}
+        
+        for fd in file_data:
+            processed = preprocess_text(fd['text'])
+            word_count = len(fd['text'].split())
+            
+            # Detect theme for individual file
+            file_themes = detect_theme(fd['text'])
+            theme_analysis[fd['name']] = [
+                {'theme': t[0], 'percentage': float(t[1]['percentage'])} 
+                for t in file_themes
+            ]
+            
+            # AI detection
+            ai_result = detect_ai_content(fd['text'], detailed=(user_role == 'lecturer'))
+            ai_analysis[fd['name']] = ai_result
+            
+            # Save to database
+            file_id = record_file(
+                session_id,
+                fd['name'],
+                os.path.basename(fd['path']),
+                fd['size'],
+                word_count,
+                file_themes[0][0] if file_themes else None,
+                float(ai_result['ai_percentage']),
+                processed[:1000]
+            )
+            
+            file_records.append({
+                "id": file_id,
+                "name": fd['name'],
+                "word_count": word_count,
+                "ai_score": ai_result['ai_percentage'],
+                "themes": file_themes
+            })
+            
+            file_info.append({
+                "name": fd['name'],
+                "text": fd['text'],
+                "id": file_id
+            })
+        
+        # Compare all pairs using enhanced similarity
+        results = []
+        all_keywords = {}
+        
+        for i in range(len(file_info)):
+            for j in range(i + 1, len(file_info)):
+                similarities = calculate_enhanced_similarity(
+                    file_info[i]['text'],
+                    file_info[j]['text']
+                )
+                
+                plagiarism_level = get_plagiarism_level(similarities['combined_similarity'])
+                
+                result_id = record_plagiarism_result(
+                    session_id,
+                    file_info[i]['id'],
+                    file_info[j]['id'],
+                    {
+                        'combined_similarity': similarities['combined_similarity'],
+                        'basic_similarity': similarities.get('basic_similarity', 0),
+                        'tfidf_similarity': similarities.get('tfidf_similarity', 0),
+                        'semantic_similarity': similarities.get('semantic_similarity', 0)
+                    },
+                    plagiarism_level
+                )
+                
+                results.append({
+                    "file1": file_info[i]['name'],
+                    "file2": file_info[j]['name'],
+                    "file1_id": file_info[i]['id'],
+                    "file2_id": file_info[j]['id'],
+                    "similarity": round(similarities['combined_similarity'], 2),
+                    "basic_similarity": round(similarities.get('basic_similarity', 0), 2),
+                    "keyword_similarity": round(similarities.get('tfidf_similarity', 0), 2),
+                    "semantic_similarity": round(similarities.get('semantic_similarity', 0), 2),
+                    "plagiarism_level": plagiarism_level,
+                    "result_id": result_id
+                })
+                
+                # Collect keywords
+                if 'keywords' in similarities:
+                    all_keywords.update(similarities['keywords'])
+        
+        return jsonify({
+            "success": True,
+            "session_id": session_id,
+            "files_compared": file_records,
+            "comparisons": results,
+            "theme": main_theme,
+            "theme_analysis": theme_analysis,
+            "ai_analysis": ai_analysis,
+            "keywords": all_keywords,
+            "problematic_files": problematic_files
+        })
+    
+    except Exception as e:
+        logger.error(f"Error in compare-mixed: {e}")
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')

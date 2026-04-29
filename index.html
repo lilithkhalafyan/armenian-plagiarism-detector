@@ -751,14 +751,21 @@
                                     <span class="credential-role" id="lecturerCred">Lecturer:</span>
                                     <span>lecturer / lecturer123</span>
                                     <button class="fill-btn" onclick="fillCredentials('lecturer')">
-                                        <i class="fas fa-paste"></i> <span id="fillBtn">Fill</span>
+                                        <i class="fas fa-paste"></i> <span>Fill</span>
                                     </button>
                                 </div>
                                 <div class="credential-item">
                                     <span class="credential-role" id="studentCred">Student:</span>
                                     <span>student / student123</span>
                                     <button class="fill-btn" onclick="fillCredentials('student')">
-                                        <i class="fas fa-paste"></i> <span id="fillBtn">Fill</span>
+                                        <i class="fas fa-paste"></i> <span>Fill</span>
+                                    </button>
+                                </div>
+                                <div class="credential-item">
+                                    <span class="credential-role" id="adminCred">Admin:</span>
+                                    <span>admin / admin123</span>
+                                    <button class="fill-btn" onclick="fillCredentials('admin')">
+                                        <i class="fas fa-paste"></i> <span>Fill</span>
                                     </button>
                                 </div>
                             </div>
@@ -814,15 +821,14 @@
                             <div class="form-group">
                                 <label id="roleLabel">Select Role</label>
                                 <div class="role-selector">
-                                    <div class="role-option selected" onclick="selectRole('lecturer')" id="roleLecturer">
-                                        <i class="fas fa-chalkboard-teacher"></i>
-                                        <span id="lecturerRole">Lecturer</span>
-                                    </div>
-                                    <div class="role-option" onclick="selectRole('student')" id="roleStudent">
+                                    <div class="role-option selected" onclick="selectRole('student')" id="roleStudent">
                                         <i class="fas fa-user-graduate"></i>
                                         <span id="studentRole">Student</span>
                                     </div>
                                 </div>
+                                <p class="text-muted mt-2" style="font-size: 0.9rem;">
+                                    Only students can self-register here. Lecturer accounts must be created by an admin.
+                                </p>
                             </div>
                             
                             <div class="error-message" id="registerError"></div>
@@ -840,8 +846,8 @@
     </div>
 
     <script>
-        const API_URL = 'http://127.0.0.1:5000/api';
-        let selectedRole = 'lecturer';
+        const API_URL = '/api';
+        let selectedRole = 'student';
         let currentLanguage = 'en';
 
         // Translations
@@ -889,6 +895,7 @@
                 testCredentials: 'Test Credentials',
                 lecturerCred: 'Lecturer:',
                 studentCred: 'Student:',
+                adminCred: 'Admin:',
                 fillBtn: 'Fill',
                 errorFillAll: 'Please fill in all fields',
                 errorPasswordLength: 'Password must be at least 6 characters',
@@ -941,6 +948,7 @@
                 testCredentials: 'Փորձնական տվյալներ',
                 lecturerCred: 'Դասախոս:',
                 studentCred: 'Ուսանող:',
+                adminCred: 'Ադմին:',
                 fillBtn: 'Լրացնել',
                 errorFillAll: 'Խնդրում ենք լրացնել բոլոր դաշտերը',
                 errorPasswordLength: 'Գաղտնաբառը պետք է լինի առնվազն 6 նիշ',
@@ -974,6 +982,8 @@
                 if (data.success && data.user) {
                     if (data.user.role === 'lecturer') {
                         window.location.href = '/lecturer.html';
+                    } else if (data.user.role === 'admin') {
+                        window.location.href = '/admin.html';
                     } else {
                         window.location.href = '/student.html';
                     }
@@ -1066,9 +1076,12 @@
             if (role === 'lecturer') {
                 document.getElementById('loginUsername').value = 'lecturer';
                 document.getElementById('loginPassword').value = 'lecturer123';
-            } else {
+            } else if (role === 'student') {
                 document.getElementById('loginUsername').value = 'student';
                 document.getElementById('loginPassword').value = 'student123';
+            } else if (role === 'admin') {
+                document.getElementById('loginUsername').value = 'admin';
+                document.getElementById('loginPassword').value = 'admin123';
             }
         }
 
@@ -1130,6 +1143,8 @@
                 if (data.success) {
                     if (data.user.role === 'lecturer') {
                         window.location.href = '/lecturer.html';
+                    } else if (data.user.role === 'admin') {
+                        window.location.href = '/admin.html';
                     } else {
                         window.location.href = '/student.html';
                     }
