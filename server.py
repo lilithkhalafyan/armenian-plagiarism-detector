@@ -1,8 +1,3 @@
-"""
-Armenian Plagiarism Detection System - COMPLETE FIXED VERSION
-All bugs fixed, highlighting working properly
-"""
-
 import json
 import os
 import re

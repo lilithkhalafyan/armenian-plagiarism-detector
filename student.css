@@ -66,10 +66,6 @@ body {
     padding: 0;
 }
 
-.sidebar-menu-item {
-    margin-bottom: 0.5rem;
-}
-
 .sidebar-menu-link {
     display: flex;
     align-items: center;
@@ -136,6 +132,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .page-title {
@@ -199,6 +197,25 @@ body {
     justify-content: center;
     color: white;
     font-weight: 600;
+}
+
+.user-name {
+    font-weight: 500;
+}
+
+.yerevan-time {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(67, 97, 238, 0.1);
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.yerevan-time i {
+    color: var(--primary);
+    margin-right: 0.5rem;
 }
 
 .stats-grid {
@@ -411,10 +428,21 @@ body {
     transition: width 0.3s ease;
 }
 
-.similarity-fill.critical { background: var(--plagiarism-critical); }
-.similarity-fill.high { background: var(--plagiarism-high); }
-.similarity-fill.moderate { background: var(--plagiarism-moderate); }
-.similarity-fill.low { background: var(--plagiarism-low); }
+.similarity-fill.critical {
+    background: var(--plagiarism-critical);
+}
+
+.similarity-fill.high {
+    background: var(--plagiarism-high);
+}
+
+.similarity-fill.moderate {
+    background: var(--plagiarism-moderate);
+}
+
+.similarity-fill.low {
+    background: var(--plagiarism-low);
+}
 
 .btn-modern {
     padding: 0.5rem 1.2rem;
@@ -434,6 +462,12 @@ body {
 .btn-primary-modern:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.btn-primary-modern:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-outline-modern {
@@ -459,6 +493,8 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-bottom: 1rem;
+    text-decoration: none;
+    border: none;
 }
 
 .back-btn:hover {
@@ -499,6 +535,17 @@ body {
     border: 1px solid var(--border);
 }
 
+.file-remove {
+    color: var(--danger);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.file-remove:hover {
+    background: rgba(247, 37, 133, 0.1);
+}
+
 .loading-spinner {
     width: 40px;
     height: 40px;
@@ -510,15 +557,19 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Modal Styles */
 .modal-content {
     border-radius: 20px;
     border: none;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -555,7 +606,7 @@ body {
     background: white;
     border-radius: 10px;
     padding: 1rem 1.5rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -573,13 +624,25 @@ body {
 }
 
 @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }
 
 @media (max-width: 768px) {
@@ -607,6 +670,10 @@ body {
     .top-navbar {
         margin-top: 60px;
     }
+    
+    .yerevan-time {
+        display: none;
+    }
 }
 
 /* Notifications */
@@ -620,7 +687,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -719,7 +785,7 @@ body {
     font-size: 0.8rem;
 }
 
-/* Result Cards (Student Version - No Highlighting) */
+/* Result Cards */
 .result-card {
     background: white;
     border-radius: 15px;
@@ -731,7 +797,7 @@ body {
 }
 
 .result-card:hover {
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
     border-color: var(--primary);
 }
@@ -807,19 +873,4 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.yerevan-time {
-    display: flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    background: rgba(67, 97, 238, 0.1);
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .yerevan-time {
-        display: none; /* Hide on mobile to save space */
-    }
 }

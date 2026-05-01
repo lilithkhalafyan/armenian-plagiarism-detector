@@ -2176,7 +2176,8 @@
             
             files.forEach(file => {
                 const uploadDate = new Date(file.upload_time).toLocaleDateString();
-                const aiScore = (file.ai_score * 100).toFixed(1);
+                const aiScore = file.ai_score ? parseFloat(file.ai_score).toFixed(1) : '0';
+
                 const aiStatus = file.ai_score > 0.7 ? 'ai_generated' : 'human_written';
                 
                 html += `
@@ -3102,11 +3103,20 @@ ${Translations.t('document_appears')} ${parseInt(aiScore) > 55 ? Translations.t(
                                 <i class="fas fa-highlighter me-2"></i> <span data-translate="sentence_analysis">Sentence-by-Sentence Analysis</span>
                             </div>
                             <div class="card-body">
-                                <p class="text-muted mb-3">
-                                    <span class="badge bg-danger me-2">🔴 Red</span> ${Translations.t('high_ai_desc')}
-                                    <span class="badge bg-warning text-dark mx-2">🟡 Yellow</span> ${Translations.t('medium_ai_desc')}
-                                    <span class="badge bg-success mx-2">🟢 Green</span> ${Translations.t('low_ai_desc')} </p>
-                                        <div id="aiSentenceList" class="list-group"></div>
+                       
+                       <p class="text-muted mb-3">
+    <span class="badge bg-danger me-2">🔴 Red</span>
+    <span data-translate="high_ai_desc">High AI probability (>70%)</span>
+    <span class="badge bg-warning text-dark mx-2">🟡 Yellow</span>
+    <span data-translate="medium_ai_desc">Medium AI probability (40-70%)</span>
+    <span class="badge bg-success mx-2">🟢 Green</span>
+        <span data-translate="medium_ai_desc">Low AI probability (40-70%)</span>
+
+</p>
+                       
+                       
+                       
+                                <div id="aiSentenceList" class="list-group"></div>
                             </div>
                         </div>
 
