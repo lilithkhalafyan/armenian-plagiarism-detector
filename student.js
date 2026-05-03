@@ -184,6 +184,7 @@ function loadDashboardData() {
     loadQuestionsCount();
     loadFeedbackCount();
     loadRecentResults();
+    loadAssignedLecturers();
     updateGlobalAIAverage();
     initCharts();
 }
@@ -191,6 +192,54 @@ function loadDashboardData() {
 function refreshData() {
     loadDashboardData();
     showToast('Data refreshed', 'success');
+}
+
+async function loadAssignedLecturers() {
+    try {
+        const container = document.getElementById('assignedLecturersContainer');
+        container.innerHTML = `<p class="text-muted">${Translations.t('loading') || 'Loading...'}</p>`;
+        
+        const res = await fetch(`${API_URL}/student/assigned-lecturers`, { credentials: 'include' });
+        const data = await res.json();
+        
+        if (!data.success) {
+            container.innerHTML = `<p class="text-muted">${Translations.t('no_lecturer_assigned') || 'No lecturer assigned yet. Please contact admin.'}</p>`;
+            return;
+        }
+        
+        const lecturers = data.lecturers || [];
+        if (!lecturers.length) {
+            container.innerHTML = `<p class="text-muted">${Translations.t('no_lecturer_assigned') || 'No lecturer assigned yet. Please contact admin.'}</p>`;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="d-flex flex-wrap gap-2">
+                ${lecturers.map(l => `
+                    <span class="badge bg-primary" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        ${escapeHtml(l.full_name)}
+                    </span>
+                `).join('')}
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading assigned lecturers:', error);
+        const container = document.getElementById('assignedLecturersContainer');
+        container.innerHTML = `<p class="text-muted">${Translations.t('no_lecturer_assigned') || 'No lecturer assigned yet. Please contact admin.'}</p>`;
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/[&<>"']/g, function(match) {
+        if (match === '&') return '&amp;';
+        if (match === '<') return '&lt;';
+        if (match === '>') return '&gt;';
+        if (match === '"') return '&quot;';
+        if (match === "'") return '&#039;';
+        return match;
+    });
 }
 
 async function loadSubmissionsCount() {
@@ -748,6 +797,108 @@ function notificationClick(id, link) {
     document.getElementById('notificationsDropdown').classList.remove('show');
     if (link) window.location.href = link;
 }
+
+// ==================================================
+// SETTINGS
+// ==================================================
+function loadSettings() {
+    fetch(`${API_URL}/current-user`, { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.user) {
+                document.getElementById('currentEmail').value = data.user.email;
+            }
+        })
+        .catch(console.error);
+}
+
+document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const feedback = document.getElementById('settingsFeedback');
+    
+    if (newPassword.length < 8) {
+        feedback.textContent = Translations.t('password_min_length') || 'Password must be at least 8 characters';
+        feedback.style.display = 'block';
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        feedback.textContent = Translations.t('password_mismatch') || 'Passwords do not match';
+        feedback.style.display = 'block';
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/change-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+            credentials: 'include'
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast(Translations.t('settings_updated') || 'Settings updated successfully', 'success');
+            feedback.style.display = 'none';
+            this.reset();
+        } else {
+            feedback.textContent = data.error || (Translations.t('password_incorrect') || 'Current password is incorrect');
+            feedback.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error changing password:', error);
+        feedback.textContent = 'Error changing password';
+        feedback.style.display = 'block';
+    }
+});
+
+document.getElementById('updateEmailForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const newEmail = document.getElementById('newEmail').value;
+    const feedback = document.getElementById('settingsFeedback');
+    
+    if (!newEmail.endsWith('@polytechnic.am')) {
+        feedback.textContent = Translations.t('email_domain_restriction') || 'Email must end with @polytechnic.am';
+        feedback.style.display = 'block';
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/update-email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ new_email: newEmail }),
+            credentials: 'include'
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast(Translations.t('settings_updated') || 'Settings updated successfully', 'success');
+            feedback.style.display = 'none';
+            document.getElementById('currentEmail').value = newEmail;
+            this.reset();
+        } else {
+            feedback.textContent = data.error || 'Error updating email';
+            feedback.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error updating email:', error);
+        feedback.textContent = 'Error updating email';
+        feedback.style.display = 'block';
+    }
+});
+
+// Load settings when settings section is shown
+const originalShowSection = window.showSection;
+window.showSection = function(sectionId) {
+    originalShowSection(sectionId);
+    if (sectionId === 'settings') {
+        loadSettings();
+    }
+};
 function markAllRead() {
     fetch(`${API_URL}/notifications/read-all`, { method: 'POST', credentials: 'include' })
         .then(() => {

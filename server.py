@@ -21,6 +21,13 @@ from file_utils import (allowed_file, detect_theme, extract_keywords, load_text,
 from similarity import (calculate_enhanced_similarity, get_plagiarism_level,
                         highlight_word_level)
 from student_works import student_works_bp
+
+# Check if Pillow is available for CAPTCHA
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
 # ==================================================
 # APP CONFIGURATION
 # ==================================================
@@ -98,6 +105,99 @@ def get_ai_details(session_id, filename):
     except Exception as e:
         logger.error(f"Error getting AI details: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ==================================================
+# CAPTCHA ENDPOINT - NEW
+# ==================================================
+@app.route('/api/captcha', methods=['GET'])
+def generate_captcha():
+    """Generate a math CAPTCHA image as base64"""
+    if not PIL_AVAILABLE:
+        # Fallback: return simple text CAPTCHA if Pillow not available
+        import random
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        answer = num1 + num2
+        session['captcha_answer'] = str(answer)
+        return jsonify({
+            'success': True,
+            'captcha_text': f'{num1} + {num2} = ?',
+            'captcha_image': None
+        })
+    
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        import io
+        import base64
+        import random
+        
+        # Generate random math problem with easier numbers
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        operations = ['+', '-']
+        operation = random.choice(operations)
+        
+        if operation == '+':
+            answer = num1 + num2
+        elif operation == '-':
+            answer = num1 - num2
+        else:
+            answer = num1 * num2
+        
+        # Store answer in session
+        session['captcha_answer'] = str(answer)
+        
+        # Create image with larger size for bigger font
+        img = Image.new('RGB', (300, 120), color='white')
+        draw = ImageDraw.Draw(img)
+        
+        # Try to use a font, fallback to default
+        try:
+            font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 48)
+        except:
+            try:
+                font = ImageFont.truetype('arial.ttf', 48)
+            except:
+                font = ImageFont.load_default()
+        
+        # Add some noise
+        for _ in range(100):
+            x = random.randint(0, 200)
+            y = random.randint(0, 80)
+            draw.point((x, y), fill='lightgray')
+        
+        # Draw text
+        text = f'{num1} {operation} {num2} = ?'
+        text_width = draw.textlength(text, font=font)
+        text_height = 32
+        x = (200 - text_width) / 2
+        y = (80 - text_height) / 2
+        draw.text((x, y), text, fill='black', font=font)
+        
+        # Convert to base64
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+        img_str = base64.b64encode(buffer.getvalue()).decode()
+        
+        return jsonify({
+            'success': True,
+            'captcha_image': f'data:image/png;base64,{img_str}'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating CAPTCHA: {e}")
+        # Fallback to simple text CAPTCHA
+        import random
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        answer = num1 + num2
+        session['captcha_answer'] = str(answer)
+        return jsonify({
+            'success': True,
+            'captcha_text': f'{num1} + {num2} = ?',
+            'captcha_image': None
+        })
 
 
 @app.route('/api/users/students', methods=['GET', 'OPTIONS'])
@@ -248,6 +348,81 @@ def logout():
     session.clear()
     return jsonify({'success': True})
 
+@app.route('/api/change-password', methods=['POST', 'OPTIONS'])
+def change_password():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
+        
+        if not current_password or not new_password:
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+        
+        if len(new_password) < 8:
+            return jsonify({'success': False, 'error': 'Password must be at least 8 characters'}), 400
+        
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('SELECT password FROM users WHERE id = ?', (user_id,))
+            user = c.fetchone()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            if not verify_password(current_password, user['password']):
+                return jsonify({'success': False, 'error': 'Current password is incorrect'}), 400
+            
+            hashed_password = hash_password(new_password)
+            c.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+            conn.commit()
+            
+            logger.info(f"Password changed for user {user_id}")
+            return jsonify({'success': True, 'message': 'Password changed successfully'})
+    except Exception as e:
+        logger.error(f"Error changing password: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/update-email', methods=['POST', 'OPTIONS'])
+def update_email():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        new_email = data.get('new_email')
+        
+        if not new_email:
+            return jsonify({'success': False, 'error': 'Email is required'}), 400
+        
+        if not new_email.endswith('@polytechnic.am'):
+            return jsonify({'success': False, 'error': 'Email must end with @polytechnic.am'}), 400
+        
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('SELECT id FROM users WHERE email = ? AND id != ?', (new_email, user_id))
+            if c.fetchone():
+                return jsonify({'success': False, 'error': 'Email already in use'}), 400
+            
+            c.execute('UPDATE users SET email = ? WHERE id = ?', (new_email, user_id))
+            conn.commit()
+            
+            logger.info(f"Email updated for user {user_id}")
+            return jsonify({'success': True, 'message': 'Email updated successfully'})
+    except Exception as e:
+        logger.error(f"Error updating email: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/current-user', methods=['GET', 'OPTIONS'])
 def current_user():
     if request.method == 'OPTIONS':
@@ -284,6 +459,161 @@ def current_user():
     
     return jsonify({'success': False, 'user': None})
 
+@app.route('/api/admin/assign-lecturer', methods=['POST', 'OPTIONS'])
+@admin_required
+def assign_lecturer():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    
+    data = request.json
+    student_id = data.get('student_id')
+    lecturer_ids = data.get('lecturer_ids', [])
+    
+    if not student_id:
+        return jsonify({'success': False, 'error': 'Student ID required'}), 400
+    
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            
+            # Remove existing assignments for this student
+            c.execute('DELETE FROM lecturer_student_assignments WHERE student_id = ?', (student_id,))
+            
+            # Add new assignments
+            for lecturer_id in lecturer_ids:
+                c.execute('''
+                    INSERT OR IGNORE INTO lecturer_student_assignments (student_id, lecturer_id)
+                    VALUES (?, ?)
+                ''', (student_id, lecturer_id))
+            
+            conn.commit()
+            logger.info(f"Lecturers assigned to student {student_id}: {lecturer_ids}")
+            return jsonify({'success': True, 'message': 'Lecturers assigned successfully'})
+    except Exception as e:
+        logger.error(f"Error assigning lecturers: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/lecturers', methods=['GET', 'OPTIONS'])
+@admin_required
+def get_lecturers():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('''
+                SELECT id, username, full_name
+                FROM users
+                WHERE role = 'lecturer'
+                ORDER BY full_name
+            ''')
+            lecturers = [dict(row) for row in c.fetchall()]
+            return jsonify({'success': True, 'lecturers': lecturers})
+    except Exception as e:
+        logger.error(f"Error getting lecturers: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/students/<int:student_id>/lecturers', methods=['GET', 'OPTIONS'])
+@admin_required
+def get_student_lecturers(student_id):
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('''
+                SELECT u.id, u.username, u.full_name
+                FROM users u
+                INNER JOIN lecturer_student_assignments lsa ON u.id = lsa.lecturer_id
+                WHERE lsa.student_id = ?
+            ''', (student_id,))
+            lecturers = [dict(row) for row in c.fetchall()]
+            return jsonify({'success': True, 'lecturers': lecturers})
+    except Exception as e:
+        logger.error(f"Error getting student lecturers: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/students/<int:student_id>/lecturers', methods=['POST', 'OPTIONS'])
+@admin_required
+def update_student_lecturers(student_id):
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    data = request.json
+    lecturer_ids = data.get('lecturer_ids', [])
+    
+    try:
+        with get_db() as conn:
+            c = conn.cursor()
+            
+            # Remove existing assignments for this student
+            c.execute('DELETE FROM lecturer_student_assignments WHERE student_id = ?', (student_id,))
+            
+            # Add new assignments
+            for lecturer_id in lecturer_ids:
+                c.execute('''
+                    INSERT OR IGNORE INTO lecturer_student_assignments (student_id, lecturer_id)
+                    VALUES (?, ?)
+                ''', (student_id, lecturer_id))
+            
+            conn.commit()
+            logger.info(f"Lecturers updated for student {student_id}: {lecturer_ids}")
+            return jsonify({'success': True, 'message': 'Lecturers updated successfully'})
+    except Exception as e:
+        logger.error(f"Error updating student lecturers: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/student/assigned-lecturers', methods=['GET', 'OPTIONS'])
+@student_required
+def get_student_assigned_lecturers():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    try:
+        # Get current user's student ID from session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('''
+                SELECT u.id, u.username, u.full_name, lsa.assigned_at
+                FROM users u
+                INNER JOIN lecturer_student_assignments lsa ON u.id = lsa.lecturer_id
+                WHERE lsa.student_id = ?
+                ORDER BY u.full_name
+            ''', (user_id,))
+            lecturers = [dict(row) for row in c.fetchall()]
+            return jsonify({'success': True, 'lecturers': lecturers})
+    except Exception as e:
+        logger.error(f"Error getting student assigned lecturers: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/lecturer/assigned-students', methods=['GET', 'OPTIONS'])
+@lecturer_required
+def get_lecturer_assigned_students():
+    if request.method == 'OPTIONS':
+        return _build_cors_response()
+    try:
+        # Get current user's lecturer ID from session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute('''
+                SELECT u.id, u.username, u.full_name, u.email, lsa.assigned_at
+                FROM users u
+                INNER JOIN lecturer_student_assignments lsa ON u.id = lsa.student_id
+                WHERE lsa.lecturer_id = ? AND u.role = 'student'
+                ORDER BY u.full_name
+            ''', (user_id,))
+            students = [dict(row) for row in c.fetchall()]
+            return jsonify({'success': True, 'students': students})
+    except Exception as e:
+        logger.error(f"Error getting lecturer assigned students: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/admin/users', methods=['GET', 'OPTIONS'])
 @admin_required
 def admin_get_users():
@@ -300,7 +630,7 @@ def admin_get_users():
             users = c.fetchall()
             result = []
             for u in users:
-                result.append({
+                user_data = {
                     'id': u['id'],
                     'username': u['username'],
                     'full_name': u['full_name'],
@@ -308,7 +638,22 @@ def admin_get_users():
                     'role': u['role'],
                     'created_at': u['created_at'],
                     'last_login': u['last_login']
-                })
+                }
+                
+                # Add assigned lecturers for students
+                if u['role'] == 'student':
+                    c.execute('''
+                        SELECT u.id, u.username, u.full_name
+                        FROM users u
+                        INNER JOIN lecturer_student_assignments lsa ON u.id = lsa.lecturer_id
+                        WHERE lsa.student_id = ?
+                    ''', (u['id'],))
+                    assigned_lecturers = [dict(row) for row in c.fetchall()]
+                    user_data['assigned_lecturers'] = assigned_lecturers
+                else:
+                    user_data['assigned_lecturers'] = []
+                
+                result.append(user_data)
             return jsonify({'success': True, 'users': result})
     except Exception as e:
         logger.error(f"Error getting admin users: {e}")
@@ -331,8 +676,11 @@ def admin_create_user():
     if not re.match(r'^[^@]+@[^@]+\.[^@]+$', data['email']):
         return jsonify({'success': False, 'error': 'Invalid email format'}), 400
 
-    if len(data['password']) < 6:
-        return jsonify({'success': False, 'error': 'Password must be at least 6 characters'}), 400
+    if not data['email'].endswith('@polytechnic.am'):
+        return jsonify({'success': False, 'error': 'Email must end with @polytechnic.am'}), 400
+
+    if len(data['password']) < 8:
+        return jsonify({'success': False, 'error': 'Password must be at least 8 characters'}), 400
 
     try:
         with get_db() as conn:

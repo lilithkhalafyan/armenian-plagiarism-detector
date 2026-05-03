@@ -499,6 +499,142 @@
             display: none;
         }
 
+        /* Modern CAPTCHA Styles */
+        .captcha-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .captcha-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border-color: #dee2e6;
+        }
+
+        .captcha-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .captcha-equation {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Inter', 'Noto Sans Armenian', sans-serif;
+        }
+
+        .math-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3436;
+            min-width: 3rem;
+            text-align: center;
+        }
+
+        .math-operator {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #636e72;
+        }
+
+        .math-question {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 2rem;
+            text-align: center;
+        }
+
+        .captcha-refresh {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .captcha-refresh:hover {
+            transform: rotate(180deg);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .captcha-refresh:active {
+            transform: rotate(360deg);
+        }
+
+        .captcha-body {
+            position: relative;
+        }
+
+        .captcha-input {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .captcha-input.is-valid {
+            border-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+
+        .captcha-input.is-invalid {
+            border-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.05);
+        }
+
+        .captcha-feedback {
+            margin-top: 0.75rem;
+            min-height: 24px;
+        }
+
+        .feedback-message {
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feedback-message.success {
+            color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .feedback-message.error {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
         .success-message.show {
             display: block;
         }
@@ -831,6 +967,34 @@
                                 </p>
                             </div>
                             
+                            <!-- Modern CAPTCHA Section -->
+                            <div class="form-group">
+                                <label id="captchaLabel" class="form-label fw-semibold">Security Check</label>
+                                <div class="captcha-card">
+                                    <div class="captcha-header">
+                                        <div class="captcha-equation" id="captchaEquation">
+                                            <span class="math-number" id="num1">9</span>
+                                            <span class="math-operator">+</span>
+                                            <span class="math-number" id="num2">10</span>
+                                            <span class="math-operator">=</span>
+                                            <span class="math-question">?</span>
+                                        </div>
+                                        <button class="captcha-refresh" onclick="refreshCaptcha()" title="Get new problem">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div class="captcha-body">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control captcha-input" id="regCaptcha" placeholder="Type your answer" maxlength="3">
+                                            <label for="regCaptcha">Enter your answer</label>
+                                        </div>
+                                        <div class="captcha-feedback" id="captchaFeedback">
+                                            <div class="feedback-message" id="captchaMessage"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="error-message" id="registerError"></div>
                             <div class="success-message" id="registerSuccess"></div>
                             
@@ -905,6 +1069,17 @@
                 errorLogin: 'Invalid username or password',
                 errorConnection: 'Connection error. Please try again.',
                 successRegistration: 'Registration successful! Please login.',
+                captchaLabel: 'CAPTCHA',
+                captchaPlaceholder: 'Enter CAPTCHA answer',
+                refreshCaptcha: 'Refresh CAPTCHA',
+                errorCaptcha: 'Invalid CAPTCHA',
+                captchaRequired: 'CAPTCHA required',
+                securityCheck: 'Security Check',
+                enterYourAnswer: 'Enter your answer',
+                typeYourAnswer: 'Type your answer',
+                captchaCorrect: 'Correct! You can proceed.',
+                captchaIncorrect: 'Incorrect. Try again or refresh.',
+                captchaSolveCorrectly: 'Please solve the CAPTCHA correctly',
             },
             hy: {
                 langHy: 'Հայերեն',
@@ -958,6 +1133,17 @@
                 errorLogin: 'Սխալ օգտանուն կամ գաղտնաբառ',
                 errorConnection: 'Կապի սխալ։ Խնդրում ենք կրկին փորձել։',
                 successRegistration: 'Գրանցումը հաջողվեց! Խնդրում ենք մուտք գործել։',
+                captchaLabel: 'ԿԱՊՉՉԱ',
+                captchaPlaceholder: 'Մուտքագրեք կապչչայի պատասխան',
+                refreshCaptcha: 'Թարմացնել կապչչան',
+                errorCaptcha: 'Սխալ կապչչա',
+                captchaRequired: 'Անհրաժեշ է կապչչան',
+                securityCheck: 'Անվտանգության ստուգում',
+                enterYourAnswer: 'Մուտքագրեք ձեր պատասխանը',
+                typeYourAnswer: 'Մուտքագրեք պատասխանը',
+                captchaCorrect: 'Ճիշտ է! Կարող եք շարունակել։',
+                captchaIncorrect: 'Սխալ է։ Կրկին փորձեք կամ թարմացրեք։',
+                captchaSolveCorrectly: 'Խնդրում ենք ճիշտ լուծել կապչչան',
             }
         };
 
@@ -1020,6 +1206,8 @@
             document.getElementById('regEmail').placeholder = translations[lang].regEmailPlaceholder;
             document.getElementById('regPassword').placeholder = translations[lang].regPasswordPlaceholder;
             document.getElementById('regConfirmPassword').placeholder = translations[lang].regConfirmPlaceholder;
+            document.getElementById('regCaptcha').placeholder = translations[lang].typeYourAnswer;
+            document.getElementById('captchaLabel').textContent = translations[lang].securityCheck;
             
             // Update buttons
             document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${translations[lang].loginBtn}`;
@@ -1054,6 +1242,9 @@
                 document.getElementById('loginError').classList.remove('show');
                 document.getElementById('registerError').classList.remove('show');
                 document.getElementById('registerSuccess').classList.remove('show');
+                
+                // Generate new CAPTCHA when switching to register form
+                generateCaptcha();
                 
                 // Scroll to top of form panel when switching to register
                 document.querySelector('.form-panel').scrollTop = 0;
@@ -1158,20 +1349,120 @@
             }
         }
 
+        // Modern CAPTCHA functionality
+        let captchaAnswer = 0;
+
+        function generateCaptcha() {
+            // Generate random numbers 0-20
+            const num1 = Math.floor(Math.random() * 21);
+            const num2 = Math.floor(Math.random() * 21);
+            const operation = Math.random() > 0.5 ? '+' : '-';
+            
+            // Calculate answer
+            if (operation === '+') {
+                captchaAnswer = num1 + num2;
+            } else {
+                // Ensure no negative results
+                captchaAnswer = Math.abs(num1 - num2);
+            }
+            
+            // Update display
+            document.getElementById('num1').textContent = num1;
+            document.getElementById('num2').textContent = num2;
+            const operatorElement = document.querySelector('.captcha-equation .math-operator:nth-child(2)');
+            if (operatorElement) {
+                operatorElement.textContent = operation === '+' ? '+' : '-';
+            }
+            
+            // Reset input and validation states
+            const captchaInput = document.getElementById('regCaptcha');
+            captchaInput.value = '';
+            captchaInput.classList.remove('is-valid', 'is-invalid');
+            
+            // Hide feedback
+            const feedbackMessage = document.getElementById('captchaMessage');
+            feedbackMessage.classList.remove('show', 'success', 'error');
+            
+            // Disable register button
+            document.getElementById('registerBtn').disabled = true;
+            
+            console.log('Generated CAPTCHA:', num1, operation, num2, '=', captchaAnswer);
+        }
+
+        function validateCaptcha() {
+            const captchaInput = document.getElementById('regCaptcha');
+            const feedbackMessage = document.getElementById('captchaMessage');
+            const registerBtn = document.getElementById('registerBtn');
+            const userAnswer = parseInt(captchaInput.value.trim());
+            
+            if (captchaInput.value === '') {
+                captchaInput.classList.remove('is-valid', 'is-invalid');
+                feedbackMessage.classList.remove('show', 'success', 'error');
+                registerBtn.disabled = true;
+                return false;
+            }
+            
+            if (userAnswer === captchaAnswer) {
+                // Correct answer
+                captchaInput.classList.remove('is-invalid');
+                captchaInput.classList.add('is-valid');
+                feedbackMessage.innerHTML = '<i class="fas fa-check-circle"></i> Correct! You can proceed.';
+                feedbackMessage.classList.remove('error');
+                feedbackMessage.classList.add('success', 'show');
+                registerBtn.disabled = false;
+                return true;
+            } else {
+                // Wrong answer
+                captchaInput.classList.remove('is-valid');
+                captchaInput.classList.add('is-invalid');
+                feedbackMessage.innerHTML = '<i class="fas fa-times-circle"></i> Incorrect. Try again or refresh.';
+                feedbackMessage.classList.remove('success');
+                feedbackMessage.classList.add('error', 'show');
+                registerBtn.disabled = true;
+                return false;
+            }
+        }
+
+        function refreshCaptcha() {
+            generateCaptcha();
+        }
+
+        // Add event listeners for CAPTCHA validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const captchaInput = document.getElementById('regCaptcha');
+            if (captchaInput) {
+                captchaInput.addEventListener('blur', validateCaptcha);
+                captchaInput.addEventListener('input', function() {
+                    // Remove validation states while typing
+                    this.classList.remove('is-valid', 'is-invalid');
+                    const feedbackMessage = document.getElementById('captchaMessage');
+                    feedbackMessage.classList.remove('show', 'success', 'error');
+                });
+            }
+        });
+
         async function register() {
             const username = document.getElementById('regUsername').value.trim();
             const fullName = document.getElementById('regFullName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
             const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+            const captcha = document.getElementById('regCaptcha').value.trim();
             const errorDiv = document.getElementById('registerError');
             const successDiv = document.getElementById('registerSuccess');
             
             errorDiv.classList.remove('show');
             successDiv.classList.remove('show');
             
-            if (!username || !fullName || !email || !password || !confirmPassword) {
+            if (!username || !fullName || !email || !password || !confirmPassword || !captcha) {
                 errorDiv.textContent = translations[currentLanguage].errorFillAll;
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            // Validate CAPTCHA
+            if (!validateCaptcha()) {
+                errorDiv.textContent = 'Please solve the CAPTCHA correctly';
                 errorDiv.classList.add('show');
                 return;
             }
@@ -1225,8 +1516,14 @@
                     document.getElementById('regEmail').value = '';
                     document.getElementById('regPassword').value = '';
                     document.getElementById('regConfirmPassword').value = '';
+                    document.getElementById('regCaptcha').value = '';
+                    document.getElementById('regCaptcha').classList.remove('is-valid', 'is-invalid');
+                    document.getElementById('captchaMessage').classList.remove('show', 'success', 'error');
                     document.getElementById('strengthBar').className = 'strength-bar';
                     document.getElementById('strengthText').textContent = '';
+                    
+                    // Generate new CAPTCHA for next registration
+                    generateCaptcha();
                     
                     setTimeout(() => {
                         switchForm('login');

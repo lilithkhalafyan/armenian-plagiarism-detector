@@ -188,6 +188,19 @@ def init_db() -> None:
             )
         ''')
 
+        # Lecturer-student assignments table
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS lecturer_student_assignments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                student_id INTEGER NOT NULL,
+                lecturer_id INTEGER NOT NULL,
+                assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY(lecturer_id) REFERENCES users(id) ON DELETE CASCADE,
+                UNIQUE(student_id, lecturer_id)
+            )
+        ''')
+
         # Create indexes
         c.execute('CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)')
         c.execute('CREATE INDEX IF NOT EXISTS idx_files_session ON uploaded_files(session_id)')

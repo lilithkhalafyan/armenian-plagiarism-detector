@@ -794,36 +794,36 @@
         /* Language Switcher - Fixed Position */
         .language-switcher {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             z-index: 1050;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 50px;
-            padding: 8px;
+            border-radius: 25px;
+            padding: 6px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .lang-btn {
-            padding: 10px 20px;
+            padding: 5px 10px;
             border: none;
             background: white;
-            border-radius: 40px;
+            border-radius: 20px;
             color: #6c757d;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 6px;
+            font-size: 0.8rem;
         }
 
         .lang-btn i {
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .lang-btn.active {
@@ -1034,17 +1034,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="fas fa-robot"></i> <span id="aiModalTitle">AI Analysis</span>
+                        <i class="fas fa-robot"></i> <span id="aiModalTitle" data-translate="ai_analysis">AI Analysis</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div id="aiAnalysisContent" style="max-height: 60vh; overflow-y: auto;">
-                        Loading...
+                        <span data-translate="loading">Loading...</span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -1056,17 +1056,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="fas fa-exchange-alt"></i> <span>File Comparison - Plagiarism Detection</span>
+                        <i class="fas fa-exchange-alt"></i> <span data-translate="file_comparison_plagiarism">File Comparison - Plagiarism Detection</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div id="comparisonContent" style="max-height: 70vh; overflow-y: auto;">
-                        Loading...
+                        <span data-translate="loading">Loading...</span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
                 </div>
             </div>
         </div>
@@ -1123,6 +1123,10 @@
         </div>
 
         <div style="margin-top: auto; padding-top: 2rem;">
+            <button class="sidebar-menu-link" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span data-translate="nav_settings">Settings</span>
+            </button>
             <button class="sidebar-menu-link" onclick="logout()" style="color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i>
                 <span data-translate="nav_logout">Logout</span>
@@ -1150,7 +1154,7 @@
                         <div class="notifications-list" id="notificationsList">
                             <div style="text-align: center; padding: 1rem; color: #6c757d;">
                                 <i class="fas fa-bell-slash"></i>
-                                <p>Loading...</p>
+                                <p><span data-translate="loading">Loading...</span></p>
                             </div>
                         </div>
                     </div>
@@ -1158,7 +1162,7 @@
 
                 <div class="user-profile">
                     <div class="user-avatar" id="userAvatar">L</div>
-                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-name" id="userName"><span data-translate="loading">Loading...</span></span>
                 </div>
             </div>
         </div>
@@ -1265,7 +1269,7 @@
                 <div class="students-list-panel">
                     <div class="students-list-header">
                         <h4><i class="fas fa-user-graduate"></i> <span data-translate="students">Students</span></h4>
-                        <input id="studentSearchInput" type="text" class="form-control" placeholder="Search students..." onkeyup="StudentWorks.filterStudents()">
+                        <input id="studentSearchInput" type="text" class="form-control" data-translate-placeholder="search_students" placeholder="Search students..." onkeyup="StudentWorks.filterStudents()">
                     </div>
                     <div id="studentsListContainer"></div>
                 </div>
@@ -1288,7 +1292,7 @@
                         <div class="empty-state"><span data-translate="select_student_work_hint">Choose a student and a file to start chatting</span></div>
                     </div>
                     <div class="chat-input">
-                        <textarea id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                        <textarea id="chatInput" data-translate-placeholder="type_message" placeholder="Type your message..." rows="1"></textarea>
                         <button type="button" onclick="StudentWorks.sendMessage()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -1320,7 +1324,7 @@
                         <tr>
                             <th data-translate="student">Student</th>
                             <th data-translate="email">Email</th>
-                            <th data-translate="registered">Registered</th>
+                            <th data-translate="assigned_date">Assigned Date</th>
                             <th data-translate="last_login">Last Login</th>
                             <th data-translate="submissions">Submissions</th>
                             <th data-translate="status">Status</th>
@@ -1384,7 +1388,7 @@
                         <div style="margin-bottom: 1rem;">
                             <div class="search-box" style="margin-bottom: 1rem;">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="studentFilesSearch" placeholder="Search student files..." onkeyup="filterStudentFiles()">
+                                <input type="text" id="studentFilesSearch" data-translate-placeholder="search_student_files" placeholder="Search student files..." onkeyup="filterStudentFiles()">
                             </div>
                             <button class="btn-modern btn-outline-modern btn-sm" onclick="selectAllStudentFiles()">
                                 <i class="fas fa-check-square"></i> <span data-translate="select_all">Select All</span>
@@ -1612,6 +1616,66 @@
                 </table>
             </div>
         </div>
+
+        <!-- SETTINGS SECTION -->
+        <div class="content-section" id="section-settings">
+            <button class="back-btn" onclick="showSection('dashboard')">
+                <i class="fas fa-arrow-left"></i> <span data-translate="back_to_dashboard">Back to Dashboard</span>
+            </button>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">
+                        <i class="fas fa-cog"></i>
+                        <span data-translate="settings">Settings</span>
+                    </h3>
+                </div>
+                
+                <div style="padding: 1.5rem;">
+                    <div id="settingsFeedback" class="alert alert-danger" style="display: none;"></div>
+                    
+                    <!-- Password Change Form -->
+                    <div style="margin-bottom: 2rem;">
+                        <h4 data-translate="change_password">Change Password</h4>
+                        <form id="changePasswordForm" style="margin-top: 1rem;">
+                            <div class="mb-3">
+                                <label class="form-label" data-translate="current_password">Current Password</label>
+                                <input type="password" class="form-control" id="currentPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" data-translate="new_password">New Password</label>
+                                <input type="password" class="form-control" id="newPassword" required>
+                                <small class="text-muted" data-translate="password_min_length">Password must be at least 8 characters</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" data-translate="confirm_password">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" data-translate="change_password_btn">Change Password</button>
+                        </form>
+                    </div>
+                    
+                    <hr style="margin: 2rem 0;">
+                    
+                    <!-- Email Update Form -->
+                    <div>
+                        <h4 data-translate="update_email">Update Email</h4>
+                        <form id="updateEmailForm" style="margin-top: 1rem;">
+                            <div class="mb-3">
+                                <label class="form-label" data-translate="current_email">Current Email</label>
+                                <input type="email" class="form-control" id="currentEmail" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" data-translate="new_email">New Email</label>
+                                <input type="email" class="form-control" id="newEmail" required>
+                                <small class="text-muted" data-translate="email_domain_restriction">Email must end with @polytechnic.am</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary" data-translate="update_email_btn">Update Email</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -1803,11 +1867,11 @@
 
         async function loadTotalStudents() {
             try {
-                const response = await fetch(`${API_URL}/users/students`, { credentials: 'include' });
+                const response = await fetch(`${API_URL}/lecturer/assigned-students`, { credentials: 'include' });
                 const data = await response.json();
                 if (data.success) {
-                    document.getElementById('totalStudents').textContent = data.total;
-                    document.getElementById('sidebarStudentsCount').textContent = data.total;
+                    document.getElementById('totalStudents').textContent = data.students.length;
+                    document.getElementById('sidebarStudentsCount').textContent = data.students.length;
                 }
             } catch (error) {
                 console.error('Error loading students:', error);
@@ -1941,11 +2005,11 @@
         // ==================================================
         async function loadStudentsList() {
             try {
-                const response = await fetch(`${API_URL}/users/students`, { credentials: 'include' });
+                const response = await fetch(`${API_URL}/lecturer/assigned-students`, { credentials: 'include' });
                 const data = await response.json();
 
                 if (data.success) {
-                    document.getElementById('totalStudentsCount').textContent = data.total;
+                    document.getElementById('totalStudentsCount').textContent = data.students.length;
 
                     const submissionsRes = await fetch(`${API_URL}/submissions`, { credentials: 'include' });
                     const submissionsData = await submissionsRes.json();
@@ -1960,8 +2024,8 @@
                     let html = '';
                     data.students.forEach(student => {
                         const subCount = submissionCounts[student.id] || 0;
+                        const assignedAt = student.assigned_at ? new Date(student.assigned_at).toLocaleDateString() : 'N/A';
                         const lastLogin = student.last_login ? new Date(student.last_login).toLocaleDateString() : 'Never';
-                        const registered = new Date(student.created_at).toLocaleDateString();
 
                         html += `
                             <tr>
@@ -1974,7 +2038,7 @@
                                     </div>
                                 </td>
                                 <td>${escapeHtml(student.email)}</td>
-                                <td>${registered}</td>
+                                <td>${assignedAt}</td>
                                 <td>${lastLogin}</td>
                                 <td><span class="badge-count" style="background: ${subCount > 0 ? '#4cc9f0' : '#6c757d'};">${subCount}</span></td>
                         <td>
@@ -1987,6 +2051,8 @@
                     });
 
                     document.getElementById('studentsList').innerHTML = html;
+                } else {
+                    document.getElementById('studentsList').innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger);">' + Translations.t('error_loading_students') + '</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading students:', error);
@@ -2773,6 +2839,108 @@
                     });
             });
         }
+
+        // ==================================================
+        // SETTINGS
+        // ==================================================
+        function loadSettings() {
+            fetch(`${API_URL}/current-user`, { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user) {
+                        document.getElementById('currentEmail').value = data.user.email;
+                    }
+                })
+                .catch(console.error);
+        }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const feedback = document.getElementById('settingsFeedback');
+            
+            if (newPassword.length < 8) {
+                feedback.textContent = Translations.t('password_min_length') || 'Password must be at least 8 characters';
+                feedback.style.display = 'block';
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                feedback.textContent = Translations.t('password_mismatch') || 'Passwords do not match';
+                feedback.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/change-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast(Translations.t('settings_updated') || 'Settings updated successfully', 'success');
+                    feedback.style.display = 'none';
+                    this.reset();
+                } else {
+                    feedback.textContent = data.error || (Translations.t('password_incorrect') || 'Current password is incorrect');
+                    feedback.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                feedback.textContent = 'Error changing password';
+                feedback.style.display = 'block';
+            }
+        });
+
+        document.getElementById('updateEmailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const newEmail = document.getElementById('newEmail').value;
+            const feedback = document.getElementById('settingsFeedback');
+            
+            if (!newEmail.endsWith('@polytechnic.am')) {
+                feedback.textContent = Translations.t('email_domain_restriction') || 'Email must end with @polytechnic.am';
+                feedback.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/update-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ new_email: newEmail }),
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast(Translations.t('settings_updated') || 'Settings updated successfully', 'success');
+                    feedback.style.display = 'none';
+                    document.getElementById('currentEmail').value = newEmail;
+                    this.reset();
+                } else {
+                    feedback.textContent = data.error || 'Error updating email';
+                    feedback.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error updating email:', error);
+                feedback.textContent = 'Error updating email';
+                feedback.style.display = 'block';
+            }
+        });
+
+        // Load settings when settings section is shown
+        const originalShowSection = window.showSection;
+        window.showSection = function(sectionId) {
+            originalShowSection(sectionId);
+            if (sectionId === 'settings') {
+                loadSettings();
+            }
+        };
 
         // Responsive menu
         if (window.innerWidth <= 768) {
