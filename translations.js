@@ -902,6 +902,7 @@ const Translations = {
             'password_mismatch': 'Գաղտնաբառերը չեն համընկնում',
             'password_incorrect': 'Ընթացիկ գաղտնաբառը սխալ է',
             'settings_updated': 'Կարգավորումները հաջողությամբ թարմացվեցին'
+            
         }
     },
     
@@ -950,6 +951,8 @@ const Translations = {
             }
         }, 100);
     },
+
+    
     
     // Update all translatable elements on the page
     updatePageLanguage() {

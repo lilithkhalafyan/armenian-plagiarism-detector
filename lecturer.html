@@ -1103,11 +1103,6 @@
                 <span data-translate="nav_questions">Questions</span>
                 <span class="badge-count" id="sidebarQuestionsCount">0</span>
             </button>
-            <button class="sidebar-menu-link" onclick="showSection('feedback')">
-                <i class="fas fa-comments"></i>
-                <span data-translate="nav_feedback">Feedback</span>
-                <span class="badge-count" id="sidebarFeedbackCount">0</span>
-            </button>
             <button class="sidebar-menu-link" onclick="showSection('plagiarism')">
                 <i class="fas fa-chart-line"></i>
                 <span data-translate="nav_plagiarism">Plagiarism Reports</span>
@@ -3277,8 +3272,7 @@ ${Translations.t('document_appears')} ${parseInt(aiScore) > 55 ? Translations.t(
     <span data-translate="high_ai_desc">High AI probability (>70%)</span>
     <span class="badge bg-warning text-dark mx-2">🟡 Yellow</span>
     <span data-translate="medium_ai_desc">Medium AI probability (40-70%)</span>
-    <span class="badge bg-success mx-2">🟢 Green</span>
-        <span data-translate="medium_ai_desc">Low AI probability (40-70%)</span>
+    
 
 </p>
                        
@@ -3299,12 +3293,14 @@ ${Translations.t('document_appears')} ${parseInt(aiScore) > 55 ? Translations.t(
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">${Translations.t('close')}</button>
-                    <button type="button" class="btn btn-primary" onclick="exportAIDetails()">
-                        <i class="fas fa-download me-2"></i> ${Translations.t('export_report')}
-                    </button>
-                </div>
+               <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <span data-translate="close">Close</span>
+    </button>
+    <button type="button" class="btn btn-primary" onclick="exportAIDetails()">
+        <i class="fas fa-download me-2"></i> <span data-translate="export_report">Export Report</span>
+    </button>
+</div>
             </div>
         </div>
     </div>
